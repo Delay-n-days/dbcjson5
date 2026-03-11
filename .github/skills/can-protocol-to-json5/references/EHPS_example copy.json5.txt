@@ -1,0 +1,62 @@
+{
+    // EHPS CAN 报文定义 — 已省略所有保留位，故障代码逐位展开
+    // 来源：中通客车多合一集成电机控制器通讯协议 BZYFG-000102 V1.0 第7.2节
+    // 协议：SAE J1939，CAN 2.0B，29位扩展帧，250Kbs，Intel字节序（默认）
+    // 统计：共5条报文(1Rx+4Tx)，30个有效信号
+
+    NODE1: "VCU",
+    NODE2: "EHPS",
+    MSGS: [
+// +--------------------------------------------------------------------------------------------------------------+
+    // [100ms] VCU Auxiliary Controller enable 辅驱开关机控制（油泵/气泵/DCDC共用帧）
+    {ID: 0x0C0A88EF, MSGNAME: "Rx0_0x0C0A88EF", DLC: 8, TXNODE:"VCU", RXNODE:"EHPS", SIGS:[
+        {SIG: "VCU_OilPump_CtrlCmd       ",	SBIT: 0,	LEN: 8,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 255,   	UINT:"",  	COMMENT: "Oil pump control 油泵指令 0xAA=开机 0x55=关机"},
+        {SIG: "VCU_AirPump_CtrlCmd       ",	SBIT: 8,	LEN: 8,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 255,   	UINT:"",  	COMMENT: "Air pump control 气泵指令 0xAA=开机 0x55=关机"},
+        {SIG: "VCU_DCDC_CtrlCmd          ",	SBIT: 16,	LEN: 8,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 255,   	UINT:"",  	COMMENT: "DC-DC control DCDC指令 0xAA=开机 0x55=关机"},
+        {SIG: "VCU_OilPump_HiTmpLmt      ",	SBIT: 32,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "油泵电机高温限功信号 0=正常 1=激活"},
+        {SIG: "VCU_OilPump_HiTmpStp      ",	SBIT: 33,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "油泵电机高温停机信号 0=正常 1=激活"},
+    ]},
+// +--------------------------------------------------------------------------------------------------------------+
+    // [100ms] EHPS DC/AC Status1 输入输出电压电流/控制器温度/故障位
+    {ID: 0x1801A79B, MSGNAME: "Tx1_0x1801A79B", DLC: 8, TXNODE:"EHPS", RXNODE:"VCU", SIGS:[
+        {SIG: "EHPS_InputVolt            ",	SBIT: 0,	LEN: 16,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"V",  	COMMENT: "Input voltage 输入电压"},
+        {SIG: "EHPS_OutputVolt           ",	SBIT: 16,	LEN: 16,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"V",  	COMMENT: "Output voltage 输出电压"},
+        {SIG: "EHPS_OutputCurr           ",	SBIT: 32,	LEN: 16,	FACTOR: 0.1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"A",  	COMMENT: "Output current 输出电流"},
+        {SIG: "EHPS_CtrlTemp             ",	SBIT: 48,	LEN: 8,	FACTOR: 1,  	OFFSET: -40,  	MIN: 0,  	MAX: 250,   	UINT:"℃",  	COMMENT: "DC/AC controller temperature 油泵控制器温度"},
+        {SIG: "EHPS_FaultUnderVolt       ",	SBIT: 56,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "输入欠压故障 0=正常 1=故障"},
+        {SIG: "EHPS_FaultOverVolt        ",	SBIT: 57,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "输入过压故障 0=正常 1=故障"},
+        {SIG: "EHPS_FaultLVPower         ",	SBIT: 58,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "低压电源故障 0=正常 1=故障"},
+        {SIG: "EHPS_FaultOverHeat        ",	SBIT: 60,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "过热故障 0=正常 1=故障"},
+        {SIG: "EHPS_FaultShortCkt        ",	SBIT: 61,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "短路故障 0=正常 1=故障"},
+        {SIG: "EHPS_FaultOverLoad        ",	SBIT: 62,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "过载故障 0=正常 1=故障"},
+        {SIG: "EHPS_FaultPhaseLoss       ",	SBIT: 63,	LEN: 1,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1,   	UINT:"",  	COMMENT: "缺相故障 0=正常 1=故障"},
+    ]},
+// +--------------------------------------------------------------------------------------------------------------+
+    // [100ms] EHPS DC/AC Status2 U相/运行状态/故障等级/DC输入电流
+    {ID: 0x1811A79B, MSGNAME: "Tx2_0x1811A79B", DLC: 8, TXNODE:"EHPS", RXNODE:"VCU", SIGS:[
+        {SIG: "EHPS_OutU_Volt            ",	SBIT: 0,	LEN: 16,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"V",  	COMMENT: "Inverter output U-phase voltage 油泵逆变器输出U相电压"},
+        {SIG: "EHPS_OutU_Curr            ",	SBIT: 16,	LEN: 16,	FACTOR: 0.1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"A",  	COMMENT: "Inverter output U-phase current 油泵逆变器输出U相电流"},
+        {SIG: "EHPS_DcAcStatus           ",	SBIT: 32,	LEN: 2,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 3,   	UINT:"",  	COMMENT: "DC/AC pump status 油泵状态 0=停机 1=预充电中 2=预充电完成 3=运行"},
+        {SIG: "EHPS_OutputCutoff         ",	SBIT: 34,	LEN: 2,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 3,   	UINT:"",  	COMMENT: "Output cutoff 输出切断 0=无效 1=有效 2=错误 3=无定义"},
+        {SIG: "EHPS_InputCutoff          ",	SBIT: 36,	LEN: 2,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 3,   	UINT:"",  	COMMENT: "Input cutoff 输入切断 0=无效 1=有效 2=错误 3=无定义"},
+        {SIG: "EHPS_FaultGrade           ",	SBIT: 48,	LEN: 3,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 4,   	UINT:"",  	COMMENT: "Fault grade 故障等级 0=无故障 1=一级(警告降额) 2=二级 3=三级 4=四级(最高停车)"},
+        {SIG: "EHPS_InputCurrDC          ",	SBIT: 51,	LEN: 13,	FACTOR: 0.1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"A",  	COMMENT: "Input current DC 直流输入电流"},
+    ]},
+// +--------------------------------------------------------------------------------------------------------------+
+    // [100ms] EHPS DC/AC Status3 V相/W相电压电流
+    {ID: 0x1821A79B, MSGNAME: "Tx3_0x1821A79B", DLC: 8, TXNODE:"EHPS", RXNODE:"VCU", SIGS:[
+        {SIG: "EHPS_OutV_Volt            ",	SBIT: 0,	LEN: 16,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"V",  	COMMENT: "Inverter output V-phase voltage 油泵逆变器输出V相电压"},
+        {SIG: "EHPS_OutV_Curr            ",	SBIT: 16,	LEN: 16,	FACTOR: 0.1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"A",  	COMMENT: "Inverter output V-phase current 油泵逆变器输出V相电流"},
+        {SIG: "EHPS_OutW_Volt            ",	SBIT: 32,	LEN: 16,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"V",  	COMMENT: "Inverter output W-phase voltage 油泵逆变器输出W相电压"},
+        {SIG: "EHPS_OutW_Curr            ",	SBIT: 48,	LEN: 16,	FACTOR: 0.1,  	OFFSET: 0,  	MIN: 0,  	MAX: 1000,   	UINT:"A",  	COMMENT: "Inverter output W-phase current 油泵逆变器输出W相电流"},
+    ]},
+// +--------------------------------------------------------------------------------------------------------------+
+    // [500ms] EHPS DC/AC Status4 电机转速/输出频率/电机转矩
+    {ID: 0x1831A79B, MSGNAME: "Tx4_0x1831A79B", DLC: 8, TXNODE:"EHPS", RXNODE:"VCU", SIGS:[
+        {SIG: "EHPS_MotorSpeed           ",	SBIT: 0,	LEN: 16,	FACTOR: 1,  	OFFSET: -15000,  	MIN: 0,  	MAX: 30000,   	UINT:"rpm",  	COMMENT: "Motor speed 电机转速 物理值=-15000~15000rpm"},
+        {SIG: "EHPS_OutFreq              ",	SBIT: 16,	LEN: 16,	FACTOR: 0.01,  	OFFSET: 0,  	MIN: 0,  	MAX: 60000,   	UINT:"Hz",  	COMMENT: "Output frequency 输出频率 物理值0~600Hz"},
+        {SIG: "EHPS_MotorTorque          ",	SBIT: 32,	LEN: 16,	FACTOR: 1,  	OFFSET: 0,  	MIN: 0,  	MAX: 500,   	UINT:"Nm",  	COMMENT: "Motor torque 电机转矩 物理值0~500Nm"},
+    ]},
+// +--------------------------------------------------------------------------------------------------------------+
+    ]
+}
