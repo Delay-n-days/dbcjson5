@@ -137,7 +137,8 @@ def unified_csv_to_dbc(unified_csv, output_dbc, encoding='utf-8'):
                         senders.add(row['发送者'])
                 
                 # 构建信号对象
-                is_signed = row.get('有符号', '否') == '是'
+                # is_signed = row.get('有符号', '否') == '是'
+                is_signed = False
                 byte_order = 'little_endian' if row.get('字节序', '') == 'little_endian' else 'big_endian'
                 
                 try:
@@ -178,7 +179,7 @@ def unified_csv_to_dbc(unified_csv, output_dbc, encoding='utf-8'):
             for sig_info in msg_data['signals']:
                 # 创建线性转换对象（用于 scale 和 offset）
                 # 根据长度判断是否是浮点数（32位或64位认为可能是浮点）
-                is_float_signal = sig_info['length'] in (32, 64)
+                is_float_signal = False
                 conversion = LinearConversion(
                     scale=sig_info['scale'],
                     offset=sig_info['offset'],
