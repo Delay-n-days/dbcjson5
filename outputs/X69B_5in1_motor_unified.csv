@@ -1,0 +1,30 @@
+消息ID,消息名称,消息长度,周期时间(ms),发送者,消息备注(JSON),信号名称,起始位,长度(bit),字节序,有符号,初值,缩放系数,偏移,最小值,最大值,单位,接收者,备注(JSON)
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,MotorEnableState,0,2,little_endian,否,,1,0,0,3,,MCU,"{""0"": ""非使能"", ""1"": ""预留"", ""2"": ""使能"", ""3"": ""保留""}"
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,MotorWorkMode,2,3,little_endian,否,,1,0,0,7,,MCU,"{""0"": ""自由Free"", ""1"": ""正转电动"", ""2"": ""正转发电"", ""3"": ""反转电动"", ""4"": ""反转发电"", ""5-7"": ""保留""}"
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,MotorCtrlMode,5,2,little_endian,否,,1,0,0,3,,MCU,"{""0"": ""转速控制"", ""1"": ""转矩控制"", ""2-3"": ""保留""}"
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,QuickPowerDown,7,1,little_endian,否,,1,0,0,1,,MCU,"{""0"": ""无使能"", ""1"": ""使能""}"
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,MotorTgtSpeed,16,16,little_endian,否,,0.25,0,0,16383.75,rpm,MCU,"{""description"": ""转速控制模式时电机目标转矩起扭矩上限值作用转矩控制模式时电机目标转速起转速上限作用""}"
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,MotorTgtTorque,32,16,little_endian,否,,1,0,0,65535,Nm,MCU,"{""description"": ""转速控制模式时电机目标转矩起作用转速控制模式时转矩限制起作用""}"
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,CtrlMsgRollingCnt,48,8,little_endian,否,1,1,0,1,255,,MCU,"{""description"": ""初始值为1每发送一次报文该值加1到255次后置1""}"
+0x0CFF0A31,MC1_MotorCtrl,8,10,HCU,,AccelPedalPercent,56,8,little_endian,否,,1,0,0,100,%,MCU,"{""description"": ""司机油门踏板百分比""}"
+0x0CFF11EF,MS1_MotorSts1,8,20,MCU,,MotorBusCurrent,0,16,little_endian,否,,0.1,-600,-600,5953.5,A,HCU,"{""description"": ""负值表示发电电流正值表示驱动""}"
+0x0CFF11EF,MS1_MotorSts1,8,20,MCU,,MotorBusVoltage,16,16,little_endian,否,,0.1,0,0,6553.5,V,HCU,
+0x0CFF11EF,MS1_MotorSts1,8,20,MCU,,MotorActualSpeed,32,16,little_endian,否,,0.25,0,0,16383.75,rpm,HCU,
+0x0CFF11EF,MS1_MotorSts1,8,20,MCU,,MotorActualTorque,48,16,little_endian,否,,1,0,0,65535,Nm,HCU,
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,MotorFeedbackState,0,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""允许上高压"", ""1"": ""系统准备就绪"", ""2"": ""运行"", ""3"": ""下强电"", ""4"": ""故障"", ""5-15"": ""保留""}"
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,MotorWorkModeFdbk,4,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""自由Free"", ""1"": ""正转电动"", ""2"": ""正转发电"", ""3"": ""反转电动"", ""4"": ""反转发电"", ""5-15"": ""保留""}"
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,MaxAllowDriveTorque,8,8,little_endian,否,,12,0,0,3060,Nm,HCU,"{""description"": ""纯电机的扭矩""}"
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,MaxAllowBrakeTorque,16,8,little_endian,否,,12,0,0,3060,Nm,HCU,"{""description"": ""纯电机的扭矩""}"
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,MaxAllowSpeed,24,8,little_endian,否,,50,0,0,12750,rpm,HCU,"{""description"": ""纯电机""}"
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,MotorTemperature,32,8,little_endian,否,,1,-80,-80,175,℃,HCU,
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,CtrllerTemperature,40,8,little_endian,否,,1,-80,-80,175,℃,HCU,
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,MCURequestCmd,48,2,little_endian,否,,1,0,0,3,,HCU,"{""0"": ""无请求"", ""1"": ""请求HCU停止电机运行"", ""2"": ""请求HCU关断电机控制器电源"", ""3"": ""保留""}"
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,CtrllerLifeSignal,52,4,little_endian,否,,1,0,0,15,,HCU,
+0x18FF12EF,MS2_MotorSts2,8,50,MCU,,CANProtocolVersion,56,8,little_endian,否,,0.01,0,0,2.55,,HCU,
+0x18FECAEF,MDM1_MotorDiag,8,1000,MCU,,ProtectLampStatus,0,2,little_endian,否,,1,0,0,3,,HCU,"{""0"": ""灯灭"", ""1"": ""灯亮"", ""description"": ""车辆系统出现问题且极有可能与相关电路子系统相关""}"
+0x18FECAEF,MDM1_MotorDiag,8,1000,MCU,,AmberWarnLampStatus,2,2,little_endian,否,,1,0,0,3,,HCU,"{""0"": ""灯灭"", ""1"": ""灯亮"", ""description"": ""车辆故障不必停车""}"
+0x18FECAEF,MDM1_MotorDiag,8,1000,MCU,,RedStopLampStatus,4,2,little_endian,否,,1,0,0,3,,HCU,"{""0"": ""灯灭"", ""1"": ""灯亮"", ""description"": ""严重故障需要停车""}"
+0x18FECAEF,MDM1_MotorDiag,8,1000,MCU,,FaultSPN,16,19,little_endian,否,,1,0,0,524287,,HCU,"{""description"": ""SPN故障码第五字节取高三位""}"
+0x18FECAEF,MDM1_MotorDiag,8,1000,MCU,,FaultFMI,35,5,little_endian,否,,1,0,0,31,,HCU,"{""description"": ""FMI故障模式标识符""}"
+0x18FECAEF,MDM1_MotorDiag,8,1000,MCU,,FaultOccurCount,40,7,little_endian,否,,1,0,0,127,,HCU,"{""description"": ""故障发生次数""}"
+0x18FECAEF,MDM1_MotorDiag,8,1000,MCU,,SPNConvertMethod,47,1,little_endian,否,,1,0,0,1,,HCU,"{""0"": ""根据版本4转化"", ""1"": ""根据版本1/2/3转化""}"

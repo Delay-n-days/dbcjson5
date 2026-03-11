@@ -1,0 +1,146 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: 
+
+
+BO_ 2365524785 MC1_MotorCtrl: 8 HCU
+ SG_ AccelPedalPercent : 56|8@1+ (1,0) [0.0|100.0] "%"  MCU
+ SG_ CtrlMsgRollingCnt : 48|8@1+ (1,0) [1.0|255.0] ""  MCU
+ SG_ MotorTgtTorque : 32|16@1+ (1,0) [0.0|65535.0] "Nm"  MCU
+ SG_ MotorTgtSpeed : 16|16@1+ (0.25,0.0) [0.0|16383.75] "rpm"  MCU
+ SG_ QuickPowerDown : 7|1@1+ (1,0) [0.0|1.0] ""  MCU
+ SG_ MotorCtrlMode : 5|2@1+ (1,0) [0.0|3.0] ""  MCU
+ SG_ MotorWorkMode : 2|3@1+ (1,0) [0.0|7.0] ""  MCU
+ SG_ MotorEnableState : 0|2@1+ (1,0) [0.0|3.0] ""  MCU
+
+BO_ 2365526512 MS1_MotorSts1: 8 MCU
+ SG_ MotorActualTorque : 48|16@1+ (1,0) [0.0|65535.0] "Nm"  HCU
+ SG_ MotorActualSpeed : 32|16@1+ (0.25,0.0) [0.0|16383.75] "rpm"  HCU
+ SG_ MotorBusVoltage : 16|16@1+ (0.1,0.0) [0.0|6553.5] "V"  HCU
+ SG_ MotorBusCurrent : 0|16@1+ (0.1,-600.0) [-600.0|5953.5] "A"  HCU
+
+BO_ 2566853360 MS2_MotorSts2: 8 MCU
+ SG_ CANProtocolVersion : 56|8@1+ (0.01,0.0) [0.0|2.55] ""  HCU
+ SG_ CtrllerLifeSignal : 52|4@1+ (1,0) [0.0|15.0] ""  HCU
+ SG_ MCURequestCmd : 48|2@1+ (1,0) [0.0|3.0] ""  HCU
+ SG_ CtrllerTemperature : 40|8@1+ (1.0,-80.0) [-80.0|175.0] "℃"  HCU
+ SG_ MotorTemperature : 32|8@1+ (1.0,-80.0) [-80.0|175.0] "℃"  HCU
+ SG_ MaxAllowSpeed : 24|8@1+ (50.0,0.0) [0.0|12750.0] "rpm"  HCU
+ SG_ MaxAllowBrakeTorque : 16|8@1+ (12.0,0.0) [0.0|3060.0] "Nm"  HCU
+ SG_ MaxAllowDriveTorque : 8|8@1+ (12.0,0.0) [0.0|3060.0] "Nm"  HCU
+ SG_ MotorWorkModeFdbk : 4|4@1+ (1,0) [0.0|15.0] ""  HCU
+ SG_ MotorFeedbackState : 0|4@1+ (1,0) [0.0|15.0] ""  HCU
+
+BO_ 2566834928 MDM1_MotorDiag: 8 MCU
+ SG_ SPNConvertMethod : 47|1@1+ (1,0) [0.0|1.0] ""  HCU
+ SG_ FaultOccurCount : 40|7@1+ (1,0) [0.0|127.0] ""  HCU
+ SG_ FaultFMI : 35|5@1+ (1,0) [0.0|31.0] ""  HCU
+ SG_ FaultSPN : 16|19@1+ (1,0) [0.0|524287.0] ""  HCU
+ SG_ RedStopLampStatus : 4|2@1+ (1,0) [0.0|3.0] ""  HCU
+ SG_ AmberWarnLampStatus : 2|2@1+ (1,0) [0.0|3.0] ""  HCU
+ SG_ ProtectLampStatus : 0|2@1+ (1,0) [0.0|3.0] ""  HCU
+
+
+
+
+CM_ BO_ 2365524785 "period 10ms";
+CM_ SG_ 2365524785 AccelPedalPercent "司机油门踏板百分比";
+CM_ SG_ 2365524785 CtrlMsgRollingCnt "初始值为1每发送一次报文该值加1到255次后置1";
+CM_ SG_ 2365524785 MotorTgtTorque "转速控制模式时电机目标转矩起作用转速控制模式时转矩限制起作用";
+CM_ SG_ 2365524785 MotorTgtSpeed "转速控制模式时电机目标转矩起扭矩上限值作用转矩控制模式时电机目标转速起转速上限作用";
+CM_ SG_ 2365524785 QuickPowerDown "0:无使能
+1:使能";
+CM_ SG_ 2365524785 MotorCtrlMode "0:转速控制
+1:转矩控制
+保留";
+CM_ SG_ 2365524785 MotorWorkMode "0:自由Free
+1:正转电动
+2 = 正转发电
+3 = 反转电动
+4 = 反转发电
+保留";
+CM_ SG_ 2365524785 MotorEnableState "0:非使能
+1:预留
+2 = 使能
+3 = 保留";
+CM_ BO_ 2365526512 "period 20ms";
+CM_ SG_ 2365526512 MotorActualTorque "";
+CM_ SG_ 2365526512 MotorActualSpeed "";
+CM_ SG_ 2365526512 MotorBusVoltage "";
+CM_ SG_ 2365526512 MotorBusCurrent "负值表示发电电流正值表示驱动";
+CM_ BO_ 2566853360 "period 50ms";
+CM_ SG_ 2566853360 CANProtocolVersion "";
+CM_ SG_ 2566853360 CtrllerLifeSignal "";
+CM_ SG_ 2566853360 MCURequestCmd "0:无请求
+1:请求HCU停止电机运行
+2 = 请求HCU关断电机控制器电源
+3 = 保留";
+CM_ SG_ 2566853360 CtrllerTemperature "";
+CM_ SG_ 2566853360 MotorTemperature "";
+CM_ SG_ 2566853360 MaxAllowSpeed "纯电机";
+CM_ SG_ 2566853360 MaxAllowBrakeTorque "纯电机的扭矩";
+CM_ SG_ 2566853360 MaxAllowDriveTorque "纯电机的扭矩";
+CM_ SG_ 2566853360 MotorWorkModeFdbk "0:自由Free
+1:正转电动
+2 = 正转发电
+3 = 反转电动
+4 = 反转发电
+保留";
+CM_ SG_ 2566853360 MotorFeedbackState "0:允许上高压
+1:系统准备就绪
+2 = 运行
+3 = 下强电
+4 = 故障
+保留";
+CM_ BO_ 2566834928 "period 1000ms";
+CM_ SG_ 2566834928 SPNConvertMethod "0:根据版本4转化
+1:根据版本1/2/3转化";
+CM_ SG_ 2566834928 FaultOccurCount "故障发生次数";
+CM_ SG_ 2566834928 FaultFMI "FMI故障模式标识符";
+CM_ SG_ 2566834928 FaultSPN "SPN故障码第五字节取高三位";
+CM_ SG_ 2566834928 RedStopLampStatus "0:灯灭
+1:灯亮";
+CM_ SG_ 2566834928 AmberWarnLampStatus "0:灯灭
+1:灯亮";
+CM_ SG_ 2566834928 ProtectLampStatus "0:灯灭
+1:灯亮";
+
+
+
+
+
+
+

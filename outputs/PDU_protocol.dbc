@@ -1,0 +1,146 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: 
+
+
+BO_ 2566849007 VCU_Command: 8 VCU
+ SG_ CanLife : 32|8@1+ (1,0) [0.0|255.0] ""  PDU
+ SG_ MainNegCont : 18|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ G7SteerPreChgCont : 16|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ G7SteerRelayCont : 14|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ G8SteerPreChgCont : 10|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ G8SteerRelayCont : 8|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ DCDCPreChgCont : 6|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ DCDCMainPosCont : 4|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ PreChgCont : 2|2@1+ (1,0) [0.0|3.0] ""  PDU
+ SG_ MainPosCont : 0|2@1+ (1,0) [0.0|3.0] ""  PDU
+
+BO_ 2566849264 PDU_State1: 8 PDU
+ SG_ MainNegRelaySts : 22|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ G7SteerPreChgSts : 20|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ G7SteerRelaySts : 18|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ G8SteerPreChgSts : 16|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ G8SteerRelaySts : 14|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ DCDCPreChgSts : 12|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ DCDCMainPosSts : 10|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ PreChgRelaySts : 8|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ MainPosRelaySts : 6|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ MSDConnectSts : 4|2@1+ (1,0) [0.0|3.0] ""  VCU
+ SG_ PDUSelfCheckSts : 0|2@1+ (1,0) [0.0|3.0] ""  VCU
+
+
+
+
+CM_ BO_ 2566849007 "period 100ms";
+CM_ SG_ 2566849007 CanLife "0-255循环发送";
+CM_ SG_ 2566849007 MainNegCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 G7SteerPreChgCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 G7SteerRelayCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 G8SteerPreChgCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 G8SteerRelayCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 DCDCPreChgCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 DCDCMainPosCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 PreChgCont "0:断开
+1:吸合
+保留";
+CM_ SG_ 2566849007 MainPosCont "0:断开
+1:吸合
+保留";
+CM_ BO_ 2566849264 "period 100ms";
+CM_ SG_ 2566849264 MainNegRelaySts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 G7SteerPreChgSts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 G7SteerRelaySts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 G8SteerPreChgSts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 G8SteerRelaySts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 DCDCPreChgSts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 DCDCMainPosSts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 PreChgRelaySts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 MainPosRelaySts "0:断开
+1:吸合
+2 = 粘连
+3 = 保留";
+CM_ SG_ 2566849264 MSDConnectSts "0:断开
+1:连接
+保留";
+CM_ SG_ 2566849264 PDUSelfCheckSts "0:自检中
+1:正常
+2 = 故障
+3 = 保留";
+
+
+
+
+
+
+

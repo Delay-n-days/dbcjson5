@@ -1,0 +1,10 @@
+[project]
+name = "docx-extractor"
+version = "1.0.0"
+description = "Extract text and tables from Word documents (DOCX format)"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "python-docx>=1.1.0",
+    "rich>=13.0.0",
+]

@@ -1,0 +1,10 @@
+[project]
+name = "excel-analyzer"
+version = "1.0.0"
+description = "Analyze Excel files and extract table content"
+requires-python = ">=3.8"
+dependencies = [
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "rich>=13.0.0",
+]

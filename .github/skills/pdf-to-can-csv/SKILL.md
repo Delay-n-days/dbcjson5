@@ -98,36 +98,15 @@ uv run python extract_pdf.py
 
 
 ### 2B. Excel 文件（.xlsx）
+优先使用大模型解析,如果大模型解析失败，再编写python脚本读取所有表格文本,然后交给大模型处理
+
 
 ```python
 import pandas as pd
-
-xl = pd.ExcelFile("/mnt/user-data/uploads/protocol.xlsx")
-print("Sheet 列表:", xl.sheet_names)
-
-# 逐个 Sheet 探索，寻找报文/信号定义表
-for sheet in xl.sheet_names:
-    df = pd.read_excel(xl, sheet_name=sheet, header=None)
-    print(f"\n=== {sheet} ===")
-    print(f"形状: {df.shape}")
-    print(df.head(5).to_string())
-```
-
-常见 Excel 协议表格特征：
-- 报文行：第一列含报文名称，某列含 `0x` 格式的 ID
-- 信号行：第一列为空，后续列含信号名、起始位、长度等
-- 表头行：含 "Start Bit"、"Length"、"Signal Name" 等关键词
-
-```python
-# 自动搜索表头行
-for i in range(min(10, df.shape[0])):
-    row_str = ' '.join([str(v) for v in df.iloc[i].tolist()])
-    if any(kw in row_str.lower() for kw in ['start bit', 'signal', 'length', '起始位', '信号名']):
-        print(f"可能的表头行: 第 {i} 行")
-        print(df.iloc[i].tolist())
 ```
 
 ### 2C. Word 文件（.docx）
+优先使用大模型解析,如果大模型解析失败，再编写python脚本读取所有文本,然后交给大模型处理
 
 ```bash
 pip install python-docx --break-system-packages
@@ -154,14 +133,14 @@ pandoc /mnt/user-data/uploads/protocol.docx -t markdown -o /tmp/protocol.md && h
 ```
 
 ### 2D. 图片文件（截图/拍照）
-
+优先使用大模型解析,如果大模型解析失败，再编写python脚本读取所有文本,然后交给大模型处理
 Claude 直接视觉识别图片中的表格内容：
 - 识别表格行列结构及数值
 - 提取十六进制 ID、数字参数、中英文混合内容
 - 对模糊/不确定内容标注 `[unclear]` 并提示用户确认
 
 ### 2E. 纯文本 / Markdown
-
+优先使用大模型解析,如果大模型解析失败，再编写python脚本
 ```bash
 cat /mnt/user-data/uploads/protocol.txt | head -100
 ```

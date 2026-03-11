@@ -1,0 +1,155 @@
+文档: JJE通信协议(CAN communication Protocol)V2.4.2 for gtake_0822.docx
+======================================================================
+
+精进电动电机控制器通讯协议
+JJE Motor Controller Communication Protocol
+版本历史：
+Revisions History:
+
+【表格 1】
+----------------------------------------------------------------------
+行 1: 日期 Data | 作者 Author | 版本 Issue Edition | 描述 Description
+行 2: 2009-08-01 | 梁亚非 | 1.0 | 初始版本
+行 3: 2012-12-04 | 梁亚非 | 1.1 | 
+行 4: 2013-06-07 | 张恒 | 1.2 | 根据韩明提供的JJE_CAN.xlsx修改信息定义，增加注释和英文翻译
+行 5: 2013-8-13 | 张恒 | 2.0 | 增加Torque Limit长度至16位，增加一帧放置DTC Code
+行 6: 2013-9-12 | 叶晓 | 2.1 | 针对双电机系统，修改了两个电机的ID，增加了两个电机分别的ID说明，增加一些注释。
+行 7: 2013-10-8 | 叶晓 | 2.2 | 转矩/转速限值分为上限和下限 添加故障说明 添加电机转数计数
+行 8: 2013-12-31 | 叶晓 | 2.3 | 修正说明
+行 9: 2014-1-6 | 叶晓 | 2.3.1 | 添加电机工作模式说明表
+行 10: 2014-1-16 | 叶晓 | 2.4 | 去掉CheckSum，调整HCU COMMAND布置，增加Limit位数到12位。
+行 11: 2015-6-29 | Yx | 2.4.1 | 核对了故障码的定义
+行 12: 2015-8-22 | YX | 2.4.2 | 整理了保护功能的说明，本文件仅保留基本的通讯协议说明，另外单独在别的文件里列出了保护功能说明。 按照硬件供应商的定义，补充了控制器硬件MCU STATUS 4的定义。
+行 13:  |  |  | 
+----------------------------------------------------------------------
+
+声明:  本文本为精进电动新能源汽车驱动电机控制的CAN通信协议模板。满足大多数整车系统的基本要求，特殊功能模块可以另行定义。本通信协议归精进电动所有。按照此文本进行整车通信协议定义前请和精进电动联系。
+Declaration: This is a CAN communication protocol template from JJE for traction motor control in new energy vehicles. Basic requirements for most vehicle systems could be fulfilled, while special functional module could be extra defined. Copyright of this communication protocol belongs to JJE. Please contact JJE before defining the vehicle communication protocol according to this template.
+概述  Overview
+本协议是混合动力系统整车控制器与电机控制器之间的通讯协议。该协议通讯网络基于 SAEJ1939，物理层、数据链路层、网络层、传输层、会话层、表示层可参照SAEJ1939，在应用层关于数据和消息群定义请参考本协议标准。
+This is the communication protocol between the hybrid controller and the motor controller. The communication network is based on SAEJ1939. Physical Layer, Data Link Layer, Network Layer, Transport Layer, Session Layer and Presentation Layer can be defined following SAEJ1939. By defining data and message group in Application Layer please refer to the definitions below.
+电阻需求  Resistance Requirement
+要求CAN网络的终端电阻不得多于两个。电机控制器可以在CAN网络配置中连接一个终端电阻。终端电阻阻值为120欧姆。具体是否采用终端电阻由客户决定。
+There should be no more than two terminal resistors in the CAN network. The motor controller is recommended to be connected to a resistor. The terminal resistance is 120 ohms. End Customer must decide whether to connect the resistor in the invertor.
+名称定义  Abbreviation
+HCU	混合动力控制单元
+Hybrid Control Unit
+MCU	电机控制单元
+Motor Control Unit
+CAN	控制器局域网
+Controller Area Network
+通讯协议  Communication Protocol
+波特率  Baud Rate
+波特率为 250kbps；
+Baud rate is 250kbps;
+字节顺序  Byte Order
+字节顺序为INTEL格式；
+Byte order is INTEL;	
+数据解码计算方法：
+(数字量)*Scale+Offset =物理量
+(物理量-Offset)/Scale=数字量
+消息群定义  Message Group Definition
+
+【表格 2】
+----------------------------------------------------------------------
+行 1: 编号 No. | 名称 Message | 标示符 ID | 长度 Length | 周期 Period
+行 2: 1 | ISG HCU Command | 0xCFF08EF | 8 | 10ms
+行 3: 2 | ISG MCU STATUS 1 | 0xCFF0008 | 8 | 10ms
+行 4: 3 | ISG MCU STATUS 2 | 0xCFF0108 | 8 | 50ms
+行 5: 4 | ISG MCU STATUS 3 | 0xCFF0208 | 8 | 100ms
+行 6: 5 | ISG MCU STATUS 4 | 0xCFF0308 | 8 | 100ms
+行 7:  |  |  |  | 
+行 8: 1 | TM HCU Command | 0xCFF09EF | 8 | 10ms
+行 9: 2 | TM MCU STATUS 1 | 0xCFF0009 | 8 | 10ms
+行 10: 3 | TM MCU STATUS 2 | 0xCFF0109 | 8 | 50ms
+行 11: 4 | TM MCU STATUS 3 | 0xCFF0209 | 8 | 100ms
+行 12: 5 | TM MCU STATUS 3 | 0xCFF0309 | 8 | 100ms
+----------------------------------------------------------------------
+
+注：如果系统中仅有单电机，则默认只使用ISG电机。
+If there is only one motor in the powertrain, the ISG motor IDs are used as default. 
+ISG表示Integrated Starter Generator
+TM表示Traction Motor
+HCU COMMAND（整车命令）
+
+【表格 3】
+----------------------------------------------------------------------
+行 1: No. | Start Bit | Length（Bit） | Parameter | Range | Unit | Offset | Scale | Note
+行 2: 1 | 0 | 1 | MCU_Enable | 0 = disable 1 = enable |  |  |  | 电机控制单元使能 MCU enable, indicating PWM enable. 控制器的使能指令，具体指控制器IGBT的PWM开关指令。当为0的时候，控制器不工作，不输出电流。当为1的时候，控制器IGBT开始开关脉冲，并根据控制模式和具体指令来工作。一般这个指令是在预充完成闭合主继电器之后发出。
+行 3: 2 | 1 | 1 | Fault Reset | 0 = disable 1 = enable |  |  |  | For fault reset（主要用于调试，整车运行中不建议使用） 用于清除控制器的故障的。当控制器发生故障以后，整车可以根据当前情况清楚控制器的故障并重新开始运行。 另外，此指令也可用在调试过程中，当发生故障以后快速清除，没必要每次都要重新上电。 平时这个值为0，需要清除故障的时候置为1。置为1的时候，控制器是无法使能的。 需要工作的时候需要再次变为0. 一般是发一个或者两个周期的1，然后随即变为0。
+行 4: 3 | 2 | 2 | Control_Mode | 0 = Reserved 1 = Speed Control 2 = Torque Control 3 = Active Discharge |  |  |  | 主动放电是指在主继电器断开以后，快速放掉电容里的电的功能。主要是为了整车的安全。 当执行下电流程，主继电器断开之后，即可将此值置为3. 注意：这个需要和MCU_Enable同时作用。当Control_Mode为3且MCU_Enable为1的时候，才会进入主动放电流程。因为主动放电功能是需要PWM工作的。 Reserved 目前暂时无用。
+行 5: 4 | 4 | 4 | Live_Counter | 0~15 |  | 0 | 1 | 循环计数器 Alive Rolling Counter
+行 6: 5 | 8 | 12 | Demand_Limit High Positive Value（正值） | 转矩：0~4096 转速：0~16384 | Nm/rpm | 0 | 转矩:1 转速：4 | 转矩/转速指令限值上限 Torque/Speed demand limit 转矩控制模式时，转速限制 起作用；转速控制模式时， 转矩限制起作用。
+行 7: 6 | 20 | 12 | Demand_Limit Low Negative Value（负值） | 转矩：0~4096 转速：0~16384 | Nm/rpm | 0 | 转矩:1 转速：4 | 转矩/转速指令限值下限 Torque/Speed demand limit 转矩控制模式时，转速限制 起作用；转速控制模式时， 转矩限制起作用。 注意：此处网络上发送的是正数值，但电机控制器实际执行按负值处理。例如转速模式下发送200Nm，表示电机转矩下限为-200Nm。
+行 8: 7 | 32 | 16 | Demand_Torque | -5000~5000 | Nm | -5000 | 1 | 转矩的正负表示力的方向，规定发动机旋转方向为正向。
+行 9: 8 | 48 | 16 | Demand_Speed | -15000~15000 | rpm | -15000 | 1 | 转速的正负表示电机旋转的方向（与发动机正常转动方向同向为正）
+----------------------------------------------------------------------
+
+关于转矩/转速限值的解释：
+在转矩模式下，如果电机转速超过了设置的上限、下限范围，则电机降额运行，如果有外力作用，例如车辆带档下坡，该模式并不能保证电机转速停留在设定范围内。（被动限速）
+在转速模式下，转矩限值使得电机的转速闭环调节输出不超过设定值，以满足整车在换挡、切换离合等特定工况下的调速需求。
+在某些应用项目上，转矩/转速的限值功能可能并未添加，请与精进电动软件部门沟通以决定具体应用状态。
+MCU STATUS 1
+
+【表格 4】
+----------------------------------------------------------------------
+行 1: No. | Start Bit | Length | Parameter | Range | Unit | Offset | Scale | Note
+行 2: No. | Start Bit | （Bit） | Parameter | Range | Unit | Offset | Scale | Note
+行 3: 1 | 0 | 16 | Motor Speed | -15000～15000 | rpm | -15000 | 1 | 电机转速正负表示电机转向，转速为正时与发动机正常转动方向一致
+行 4: 2 | 16 | 16 | Motor Torque | -5000～5000 | Nm | -5000 | 1 | 扭矩大于 0为转矩方向与发动机转向相同
+行 5: 3 | 32 | 16 | Motor AC Current | 0～1000 | A | 0 | 0.1 | 交流侧电流有效值反馈 AC Current RMS value feedback
+行 6: 4 | 52 | 1 | Precharge_Allow | 0 = disable 1 = enable |  | 0 | 1 | 允许预充电（不建议使用，只要电机未报故障，就允许预充电）
+行 7: 5 | 53 | 1 | Active_Discharge_Enable_Feedback | 0 = disable 1 = enable |  | 0 | 1 | 主动放电反馈
+行 8: 6 | 54 | 1 | IGBT_Enable_Feedback | 0 = disable 1 = enable |  | 0 | 1 | IGBT使能状态反馈（可以结合Fail Grade来判断，正常使能工作情况下，该位为1）
+行 9: 8 | 60 | 4 | Live counter | 0～15 |  | 0 | 1 | 循环计数器 Alive Rolling Counter
+----------------------------------------------------------------------
+
+MCU STATUS 2
+
+【表格 5】
+----------------------------------------------------------------------
+行 1: No. | Start Bit | Length | Parameter | Range | Unit | Offset | Scale | Note
+行 2: No. | Start Bit | （Bit） | Parameter | Range | Unit | Offset | Scale | Note
+行 3: 1 | 0 | 8 | Motor Temperature | -40～215 | ℃ | -40 | 1 | 电机本体温度（最低温只能测到22度）
+行 4: 2 | 8 | 8 | MCU temperature | -40～215 | ℃ | -40 | 1 | 电机控制器温度
+行 5: 3 | 16 | 16 | Torque Limit(High) | 0～5000 | Nm | 0 | 1 | 转矩上限
+行 6: 4 | 32 | 16 | Torque Limit(Low) | -5000～0 | Nm | -5000 | 1 | 转矩下限
+行 7: 5 | 48 | 4 | Fail Grade | 0 = No Fault 1 = Warning (degraded) 2 = Fault (zero torque output) 3 = Fault (shut down MCU) 4 = Serious Fault (need to stop the vehicle) |  | 0 | 1 | 0：无故障 1：警告报警（电机需要降功率处理，整车也需要降速运行） 2：故障（零转矩输出，建议停车处理） 3：比较严重故障（需要关断电机，停车处理） 4：严重故障（需要停车处理）
+行 8: 6 | 60 | 4 | Live counter | 0～15 |  | 0 | 1 | 循环计数器 Alive Rolling Counter
+----------------------------------------------------------------------
+
+整车的故障处理，需要统一通过判断Fail Grade（故障等级）来判断，当故障等级为2，3或者4的时候，需要整车断开动力，在仪表上显示并提醒司机停车。
+在CAN通讯故障时，电机控制器无法给整车发送故障等级，建议整车延时中断动力。
+Fail Grade说明：
+Fail Grade=1，表示轻微故障，警告，电机降额运行，限额值可以参考MCU STATUS2的反馈。
+Fail Grade=2，表示一般故障，电机输出零转矩。排除故障后，电机即可正常运行。
+Fail Grade=3表示严重故障，需要关断电机。需要HCU将转矩指令置为0，Enable置为无效，并排除故障之后发送reset命令或者重启电机控制器，才能恢复。
+MCU STATUS 3
+
+【表格 6】
+----------------------------------------------------------------------
+行 1: No. | Start Bit | Length | Parameter | Range | Unit | Offset | Scale | Note
+行 2: No. | Start Bit | （Bit） | Parameter | Range | Unit | Offset | Scale | Note
+行 3: 1 | 0 | 16 | DTC Code | 0～0xFFFF |  |  |  | 错误故障码 Diagnostic Trouble Code
+行 4: 2 | 16 | 16 | DC Current(A) | -1000～1000 | A | -1000 | 1 | 直流电流（估计值，不建议作为控制量），电机驱动状态为负，发电状态为正。
+行 5: 3 | 32 | 16 | DC Voltage(V) | 0～1000 | V | 0 | 0.1 | 直流电压
+行 6: 4 | 48 | 8 | Motor Rotation Count | 0~255 | 转 | 0 | 1 | 电机转数循环计数，到255后回0。该转数计数器用于记录转了多少圈，满255之后清零。可以和仪表配合进行精确里程计算。
+行 7: 4 | 60 | 4 | Live counter | 0～15 |  | 0 | 1 | 循环计数器 Alive Rolling Counter
+----------------------------------------------------------------------
+
+注意：DTC Code的定义及对应Fail Grade的定义，按照另外的故障代码定义文档执行。
+MCU STATUS 4 (Hardware Error Code)
+
+【表格 7】
+----------------------------------------------------------------------
+行 1: No. | Start Bit | Length | Parameter | Range | 故障含义 | Note
+行 2: No. | Start Bit | （Bit） | Parameter | Range | 故障含义 | Note
+行 3: 1 | 0 | 8 | Hardware Error Code 1 | 0～0xFF | 1：母线电压欠压故障；                    2：母线电压过压故障。 | 电压故障
+行 4: 2 | 8 | 8 | Hardware Error Code 2 | 0～0xFF | 1：硬件限流故障；                           2：硬件过流故障。 | 电流故障
+行 5: 3 | 16 | 8 | Hardware Error Code 3 | 0～0xFF | 1：电机控制器温度断线故障；              2：电机控制器过温故障；                    3：电机温度断线故障；                       4：电机温度过温故障。 | 温度故障
+行 6: 4 | 24 | 8 | Hardware Error Code 4 | 0～0xFF | 1：IGBT模块故障； | IGBT模块故障
+行 7: 5 | 32 | 8 | Hardware Error Code 5 | 0～0xFF | 1：编码器断线故障； | 编码器断线故障
+行 8: 6 | 40 | 8 | Hardware Error Code 6 | 0～0xFF | 1：控制器内部控制电源异常故障（5V异常）；                                            2：外供控制器控制电源异常故障（24V输入断线或低于18V）； | 控制电源异常故障
+行 9: 7 | 60 | 4 | Live counter | 0～15 |  | 循环计数器
+行 10: 7 | 60 | 4 | Live counter | 0～15 |  | Alive Rolling Counter
+----------------------------------------------------------------------
