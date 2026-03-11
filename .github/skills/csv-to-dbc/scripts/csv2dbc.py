@@ -4,11 +4,12 @@
 import csv
 import json
 import sys
-import typer
-import cantools
-from typing import Optional
-from cantools.database.conversion import LinearConversion
 from pathlib import Path
+from typing import Optional
+
+import cantools
+import typer
+from cantools.database.conversion import LinearConversion
 
 app = typer.Typer(help="CSV 到 DBC 文件转换工具")
 
@@ -251,7 +252,7 @@ def convert(
         ...,
         help="统一 CSV 文件路径"
     ),
-    output_dbc: Optional[str] = typer.Option(
+    output_dbc: str | None = typer.Option(
         None,
         "--output",
         "-o",
