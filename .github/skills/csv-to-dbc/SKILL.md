@@ -48,167 +48,39 @@ description: >
 | `csv2dbc.py` | **本 skill 内置** `scripts/csv2dbc.py` | 转换脚本（无需用户上传） |
 | `pyproject.toml` | **本 skill 内置** `scripts/pyproject.toml` | 依赖配置（无需用户上传） |
 
-### 1.2 建立工作目录
+
+## 第二步：查看帮助
 
 ```bash
-mkdir -p /home/claude/workspace/outputs
 
-# 复制内置脚本（从 skill 目录）
-SKILL_DIR=$(find /mnt/skills -name "csv-to-dbc" -type d 2>/dev/null | head -1)
-cp "$SKILL_DIR/scripts/csv2dbc.py" /home/claude/workspace/
-cp "$SKILL_DIR/scripts/pyproject.toml" /home/claude/workspace/
+(dbcjson5) PS C:\Users\25156\Desktop\dbcjson5> uv run python ".github/skills/csv-to-dbc/scripts/csv2dbc.py" --help
 
-# 查找并复制用户的 CSV 文件
-CSV_FILE=$(find /mnt/user-data -name "*unified*.csv" 2>/dev/null | head -1)
-if [ -z "$CSV_FILE" ]; then
-    CSV_FILE=$(find /mnt/user-data -name "*.csv" 2>/dev/null | head -1)
-fi
-echo "使用 CSV: $CSV_FILE"
-cp "$CSV_FILE" /home/claude/workspace/
+ Usage: csv2dbc.py [OPTIONS] COMMAND [ARGS]...
 
-ls -la /home/claude/workspace/
+ CSV 到 DBC 文件转换工具
+
+╭─ Options ──────────────────────────────────────────────────────╮
+│ --install-completion          Install completion for the       │
+│                               current shell.                   │
+│ --show-completion             Show completion for the current  │
+│                               shell, to copy it or customize   │
+│                               the installation.                │
+│ --help                        Show this message and exit.      │
+╰────────────────────────────────────────────────────────────────╯
+╭─ Commands ─────────────────────────────────────────────────────╮
+│ convert  从统一的 CSV 表生成 DBC 文件                          │
+│ version  显示版本信息                                          │
+╰────────────────────────────────────────────────────────────────╯
+
 ```
 
----
-
-## 第二步：配置 uv 环境
-
-参照 `uv-project-runner` skill 执行完整安装流程：
+## 第三步: 运行
 
 ```bash
-# 检测并安装 uv
-which uv 2>/dev/null || {
-    echo "安装 uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null || \
-    pip install uv --break-system-packages
-}
-
-# 配置 PATH
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-
-# 同步依赖
-cd /home/claude/workspace
-uv sync
-
-# 验证 cantools
-uv run python -c "import cantools; print('✓ cantools', cantools.__version__)"
+uv run python ".github/skills/csv-to-dbc/scripts/csv2dbc.py" convert outputs/{csvname}.csv -o outputs/{dbcname}.dbc -e utf-8
 ```
 
----
-
-## 第三步：执行转换
-
-### 3.1 查看帮助
-
-```bash
-cd /home/claude/workspace
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-uv run python csv2dbc.py --help
-```
-
-或使用 PowerShell（Windows）：
-
-```powershell
-cd C:\path\to\workspace
-uv run python csv2dbc.py --help
-```
-
-输出说明：
-```
-Arguments:
-  unified_csv   统一 CSV 文件路径  [required]
-
-Options:
-  -o, --output  输出 DBC 文件路径
-  -e, --encoding  CSV 编码 [default: gb2312]
-```
-
-### 3.2 执行转换
-
-```bash
-cd /home/claude/workspace
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-
-# 自动检测 CSV 文件名
-CSV=$(ls *.csv | head -1)
-echo "转换: $CSV"
-
-uv run python csv2dbc.py "$CSV" \
-    --output "outputs/$(basename $CSV .csv).dbc" \
-    --encoding utf-8
-```
-
-或 PowerShell（Windows）：
-
-```powershell
-cd C:\path\to\workspace
-
-# 自动检测 CSV 文件名
-$CSV = Get-ChildItem -Filter "*.csv" | Select-Object -First 1 -ExpandProperty Name
-echo "转换: $CSV"
-
-uv run python csv2dbc.py "$CSV" `
-    --output "outputs\$($CSV -replace '\.csv$', '.dbc')" `
-    --encoding utf-8
-```
-
-### 3.3 编码选择
-
-```bash
-# 检测文件编码
-file *.csv
-python3 -c "
-import chardet
-with open('data.csv', 'rb') as f:
-    result = chardet.detect(f.read())
-print(result)
-"
-
-# UTF-8 文件
-uv run python csv2dbc.py "data.csv" --encoding utf-8
-
-# GBK/GB2312 文件（默认）
-uv run python csv2dbc.py "data.csv" --encoding gb2312
-```
-
----
-
-## 第四步：验证输出
-
-### 4.1 检查转换日志
-
-成功输出示例：
-```
-正在读取统一 CSV: data.csv
-警告: 原始 DBC 文件不存在，从 CSV 数据构建数据库
-正在生成 DBC 文件...
-✓ 验证成功! 包含 16 条消息
-✓ 输出文件: outputs/data.dbc
-```
-
-### 4.2 验证 DBC 内容
-
-```bash
-cd /home/claude/workspace
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-
-# 统计消息和信号数量
-echo "消息数: $(grep -c '^BO_ ' outputs/*.dbc)"
-echo "信号数: $(grep -c '^ SG_ ' outputs/*.dbc)"
-
-# cantools 深度验证
-uv run python -c "
-import cantools
-db = cantools.database.load_file('outputs/$(ls outputs/*.dbc | head -1 | xargs basename)')
-print(f'✓ 消息数: {len(db.messages)}')
-for msg in sorted(db.messages, key=lambda m: m.frame_id):
-    print(f'  0x{msg.frame_id:08X}  {msg.name:<40} {len(msg.signals)} 个信号')
-"
-```
-
----
-
-## 第五步：错误处理
+## 第三步：错误处理
 
 ### 5.1 常见错误
 
