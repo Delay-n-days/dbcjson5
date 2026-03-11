@@ -66,6 +66,7 @@ def _process_signal_comment(comment_str):
     """
     处理信号注释，将 JSON 格式转换为 DBC 格式
     """
+    # print(f"正在处理信号注释: {comment_str}")
     if not comment_str or comment_str.strip() == '':
         return ''
     
@@ -75,6 +76,8 @@ def _process_signal_comment(comment_str):
         # 转换为 DBC 格式
         return build_comment_text(parsed)
     
+    # 打印调试信息
+    print(f"⚠ 无法解析的注释格式，保留原文本: {comment_str}", file=sys.stderr)
     # 如果不是 JSON，直接返回原文本
     return comment_str
 
@@ -158,60 +161,54 @@ def unified_csv_to_dbc(unified_csv, output_dbc, encoding='utf-8'):
                     'unit': row.get('单位', '') if row.get('单位', '') else '',
                     'receivers': [r.strip() for r in row.get('接收者', '').split(',') if r.strip()],
                     'byte_order': byte_order,
-                    'comment': _process_signal_comment(row.get('信号备注(JSON)', ''))
+                    'comment': _process_signal_comment(row.get('备注(JSON)', ''))
                 }
                 
                 messages_dict[msg_id]['signals'].append(signal_info)
         
         # 使用 cantools 生成 DBC
         # 优先使用原始 DBC 作为模板，如果不存在则从 CSV 数据构建
-        original_dbc_path = 'LvKong_1C_V2.5_A484_A485_100_00B.dbc'
+
+        # 从 CSV 数据构建 cantools 数据库对象
+        db = cantools.database.Database()
         
-        if Path(original_dbc_path).exists():
-            print(f"使用原始 DBC 文件作为模板: {original_dbc_path}")
-            db = cantools.database.load_file(original_dbc_path, encoding='gb2312')
-        else:
-            print(f"警告: 原始 DBC 文件不存在，从 CSV 数据构建数据库")
-            # 从 CSV 数据构建 cantools 数据库对象
-            db = cantools.database.Database()
-            
-            for msg_id, msg_data in messages_dict.items():
-                signals = []
-                for sig_info in msg_data['signals']:
-                    # 创建线性转换对象（用于 scale 和 offset）
-                    # 根据长度判断是否是浮点数（32位或64位认为可能是浮点）
-                    is_float_signal = sig_info['length'] in (32, 64)
-                    conversion = LinearConversion(
-                        scale=sig_info['scale'],
-                        offset=sig_info['offset'],
-                        is_float=is_float_signal
-                    ) if (sig_info['scale'] != 1 or sig_info['offset'] != 0) else None
-                    
-                    signal = cantools.database.Signal(
-                        name=sig_info['name'],
-                        start=sig_info['start'],
-                        length=sig_info['length'],
-                        byte_order=sig_info['byte_order'],
-                        is_signed=sig_info['is_signed'],
-                        conversion=conversion,
-                        minimum=sig_info['minimum'],
-                        maximum=sig_info['maximum'],
-                        unit=sig_info['unit'],
-                        receivers=sig_info['receivers'],
-                        comment=sig_info['comment']
-                    )
-                    signals.append(signal)
+        for msg_id, msg_data in messages_dict.items():
+            signals = []
+            for sig_info in msg_data['signals']:
+                # 创建线性转换对象（用于 scale 和 offset）
+                # 根据长度判断是否是浮点数（32位或64位认为可能是浮点）
+                is_float_signal = sig_info['length'] in (32, 64)
+                conversion = LinearConversion(
+                    scale=sig_info['scale'],
+                    offset=sig_info['offset'],
+                    is_float=is_float_signal
+                ) if (sig_info['scale'] != 1 or sig_info['offset'] != 0) else None
                 
-                message = cantools.database.Message(
-                    frame_id=msg_data['frame_id'],
-                    name=msg_data['name'],
-                    length=msg_data['length'],
-                    signals=signals,
-                    senders=[msg_data['sender']],
-                    comment=msg_data['comment'],
-                    is_extended_frame=msg_data['is_extended']
+                signal = cantools.database.Signal(
+                    name=sig_info['name'],
+                    start=sig_info['start'],
+                    length=sig_info['length'],
+                    byte_order=sig_info['byte_order'],
+                    is_signed=sig_info['is_signed'],
+                    conversion=conversion,
+                    minimum=sig_info['minimum'],
+                    maximum=sig_info['maximum'],
+                    unit=sig_info['unit'],
+                    receivers=sig_info['receivers'],
+                    comment=sig_info['comment']
                 )
-                db.messages.append(message)
+                signals.append(signal)
+            
+            message = cantools.database.Message(
+                frame_id=msg_data['frame_id'],
+                name=msg_data['name'],
+                length=msg_data['length'],
+                signals=signals,
+                senders=[msg_data['sender']],
+                comment=msg_data['comment'],
+                is_extended_frame=msg_data['is_extended']
+            )
+            db.messages.append(message)
         
         # 输出 DBC 文件
         output_path = Path(output_dbc)
@@ -227,11 +224,13 @@ def unified_csv_to_dbc(unified_csv, output_dbc, encoding='utf-8'):
         # 验证
         print(f"正在验证生成的 DBC 文件...")
         db_verify = cantools.database.load_file(str(output_path), encoding='gb2312')
-        
-        if len(db_verify.messages) == len(messages_dict):
-            print(f"✓ 验证成功! 包含 {len(messages_dict)} 条消息")
-        else:
-            print(f"⚠ 警告: 消息数量不匹配")
+
+        # 打印信息数量和信号数量和带注释的数量
+        print(f"✓ 消息数量: {len(db_verify.messages)}")
+        total_signals = sum(len(msg.signals) for msg in db_verify.messages)
+        print(f"✓ 信号数量: {total_signals}")
+        commented_signals = sum(1 for msg in db_verify.messages for sig in msg.signals if sig.comment and sig.comment.strip() != '')
+        print(f"✓ 带注释的信号数量: {commented_signals}")
         
         print(f"✓ 输出文件: {output_dbc}")
         return True

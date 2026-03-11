@@ -15,8 +15,9 @@ description: >
 ## 任务概述
 
 从任意格式的 CAN 通讯协议文档（PDF / Excel / Word / 图片 / 文本）中，
-提取全部报文和信号定义，输出符合 **Unified CSV 格式**的表格文件，
+提取全部报文和信号定义 **不要编写任何脚本** ，输出符合 **Unified CSV 格式**的表格文件，
 作为后续 `csv2dbc.py` 生成 DBC 文件的前置输入。
+**注意必须附带完整的注释**
 
 ---
 
@@ -67,15 +68,15 @@ uv run python extract_pdf.py
 消息ID,消息名称,消息长度,周期时间(ms),发送者,消息备注(JSON),信号名称,起始位,长度(bit),字节序,有符号,初值,缩放系数,偏移,最小值,最大值,单位,接收者,备注(JSON)
 0x18FF5678,MCU2_STATUS5,8,,,,MCU1_VoltD,0,16,little_endian,否,,1,-30000,,,,,
 0x18FF5678,MCU2_STATUS5,8,,,,MCU1_VoltQ,16,16,little_endian,否,,1,-30000,,,,,
-0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_Soft_ProtocolVer,8,4,little_endian,否,,0.1,2,,,,HCU,"{""0"": ""INIT"", ""1"": ""LV_PWR_UP"", ""2"": ""HV_PWR_UP"", ""3"": ""Idle"", ""4"": ""Speed Control"", ""5"": ""Torque Control"", ""6"": ""SHUTDWN(active capacitor discharge)"", ""7"": 
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_Soft_ProtocolVer,8,4,little_endian,否,,0.1,2,,,,HCU,"{"0": "INIT", "1": "LV_PWR_UP", "2": "HV_PWR_UP", "3": "Idle", "4": "Speed Control", "5": "Torque Control", "6": "SHUTDWN(active capacitor discharge)", "7": 
 0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_Rotation_Unit,34,2,little_endian,否,,1,0,0,3,,HCU,
-0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_soft_ver,40,24,little_endian,否,,1,0,0,16777215,,HCU,"{""0"": ""INIT"", ""1"": ""LV_PWR_UP"", ""2"": ""HV_PWR_UP"", ""3"": ""Idle"", ""4"": ""Speed Control"", ""5"": ""Torque Control"", ""6"": ""SHUTDWN(active capacitor discharge)"", ""7"": ""LV_PWR_DWN"", ""8"": ""FAULT""}"
-0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Speed,0,16,little_endian,否,,1,-6000,-6000,59535,rpm,HCU,"{""description"": ""电机转速正负表示电机转向，转速为正时与发动机正常转动方向一致""}"
-0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Torque,16,16,little_endian,否,,1,-3200,-3200,62335,Nm,HCU,"{""description"": ""转矩矩大于0为转矩方向与发动机转向相同""}"
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_soft_ver,40,24,little_endian,否,,1,0,0,16777215,,HCU,"{"0": "INIT", "1": "LV_PWR_UP", "2": "HV_PWR_UP", "3": "Idle", "4": "Speed Control", "5": "Torque Control", "6": "SHUTDWN(active capacitor discharge)", "7": "LV_PWR_DWN", "8": "FAULT"}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Speed,0,16,little_endian,否,,1,-6000,-6000,59535,rpm,HCU,"{"description": "电机转速正负表示电机转向，转速为正时与发动机正常转动方向一致"}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Torque,16,16,little_endian,否,,1,-3200,-3200,62335,Nm,HCU,"{"description": "转矩矩大于0为转矩方向与发动机转向相同"}"
 0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_DC_Current,32,16,little_endian,否,,1,-1000,-1000,64535,A,HCU,
 0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_IvtPwmTzFrc,48,8,little_endian,否,,1,0,,,,,
-0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Fail_Grade,56,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""No Fault"", ""1"": ""Warning(degraded)"", ""2"": ""Fault(zero torque output)"", ""3"": ""Fault(shut down MCU)"", ""4"": ""Serious Fault(need to stop the vehicle)""}"
-0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Work_Mode,60,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""Ready（上电完成 MCU 已开管不 控制）"", ""1"": ""Enable（上电完成，MCU 未开管）"", ""2"": ""PowerUp（低压上电，准备上高压 或者高压上电过程中）"", ""3"": ""Error(错误)"", ""4"": ""防溜坡控制状态"", ""5"": ""转速模式扭矩受限"", ""6"": ""扭矩模式转速受限"", ""7"": ""快速下电中"", ""8"": ""扭矩控制"", ""9"": ""速度控制""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Fail_Grade,56,4,little_endian,否,,1,0,0,15,,HCU,"{"0": "No Fault", "1": "Warning(degraded)", "2": "Fault(zero torque output)", "3": "Fault(shut down MCU)", "4": "Serious Fault(need to stop the vehicle)"}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Work_Mode,60,4,little_endian,否,,1,0,0,15,,HCU,"{"0": "Ready（上电完成 MCU 已开管不 控制）", "1": "Enable（上电完成，MCU 未开管）", "2": "PowerUp（低压上电，准备上高压 或者高压上电过程中）", "3": "Error(错误)", "4": "防溜坡控制状态", "5": "转速模式扭矩受限", "6": "扭矩模式转速受限", "7": "快速下电中", "8": "扭矩控制", "9": "速度控制"}"
 ```
 #### 读取pdf文件
 **不要自己编写 PDF 解析脚本**，直接使用内置的 `epdf-summary` skill工具 ，它会提取 PDF 中的文本和表格内容
@@ -241,7 +242,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 - 每行一个信号，同一报文多行重复报文列
 - 消息 ID 统一用 `0x` 前缀十六进制
 - 信号名称全局唯一，加节点前缀
-- JSON 字段内双引号转义为 `""`
+- JSON 字段内双引号转义为 `"`
 - `有符号` 默认 `否`（用 offset 实现负值）
 
 ### 4.3 常见 scale/offset 参照
@@ -263,7 +264,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 - 消息级 `消息备注(JSON)`（第 6 列）
 - 信号级 `备注(JSON)`（第 19 列）
 
-#### 4.4.1 三种备注格式
+#### 4.4.1 三种备注格式 不能共存
 
 ##### 格式 A：纯描述文字（推荐用于注释、说明）
 
@@ -273,7 +274,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 
 在 CSV 中的写法：
 ```csv
-...,"{""description"": ""电机转速正负表示电机转向""}"
+...,"{"description": "电机转速正负表示电机转向"}"
 ```
 
 **应用场景**：
@@ -283,7 +284,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 
 **示例**：
 ```csv
-0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Motor_Speed,0,16,little_endian,否,0,1,-15000,-15000,15000,rpm,OilPump_MCU,"{""description"": ""电机转速，负值表示反向转动""}ÿ
+0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Motor_Speed,0,16,little_endian,否,0,1,-15000,-15000,15000,rpm,OilPump_MCU,"{"description": "电机转速，负值表示反向转动"}ÿ
 ```
 
 ---
@@ -296,7 +297,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 
 在 CSV 中的写法：
 ```csv
-...,"{""0"": ""No Fault"", ""1"": ""Warning"", ""2"": ""Fault"", ""3"": ""Shutdown""}"
+...,"{"0": "No Fault", "1": "Warning", "2": "Fault", "3": "Shutdown"}"
 ```
 
 **应用场景**：
@@ -306,7 +307,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 
 **示例**：
 ```csv
-0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Fault_Level,16,2,little_endian,否,0,1,0,0,3,,OilPump_MCU,"{""0"": ""No Error"", ""1"": ""Warning"", ""2"": ""Serious Error"", ""3"": ""Shutdown""}"
+0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Fault_Level,16,2,little_endian,否,0,1,0,0,3,,OilPump_MCU,"{"0": "No Error", "1": "Warning", "2": "Serious Error", "3": "Shutdown"}"
 ```
 
 **物理值→枚举映射**：
@@ -325,7 +326,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 
 在 CSV 中的写法：
 ```csv
-...,"{""00"": ""Neutral"", ""01"": ""Forward"", ""10"": ""Reverse"", ""11"": ""Reserved""}"
+...,"{"00": "Neutral", "01": "Forward", "10": "Reverse", "11": "Reserved"}"
 ```
 
 **应用场景**：
@@ -335,7 +336,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 
 **示例**：
 ```csv
-0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Gear_Status,24,2,little_endian,否,0,1,0,0,3,,OilPump_MCU,"{""00"": ""空档位"", ""01"": ""前进档"", ""10"": ""后退档"", ""11"": ""无效""}""
+0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Gear_Status,24,2,little_endian,否,0,1,0,0,3,,OilPump_MCU,"{"00": "空档位", "01": "前进档", "10": "后退档", "11": "无效"}"
 ```
 
 ---
@@ -347,7 +348,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 | 内容 | 转义方式 | 示例 |
 |------|--------|------|
 | JSON 开始和结尾 | 用 `"` 双引号包裹整个字段 | `"{...}"` |
-| JSON 内的双引号 | 转义为 `""` | `{"0": "No"}` → `{""0"": ""No""}` |
+| JSON 内的双引号 | 转义为 `"` | `{"0": "No"}` → `{"0": "No"}` |
 | JSON 内的反斜杠 | 保持不变 | `\"` 保持 `\"` |
 | 换行符 | 不建议在 CSV 中使用，用 `\n` 转义 | `"line1\nline2"` |
 
@@ -360,7 +361,7 @@ Note 含 "(MCU To VCU)" → 发送者=对应MCU
 
 CSV 中的写法：
 ```csv
-"{""0"": ""No Fault"", ""1"": ""Warning""}"
+"{"0": "No Fault", "1": "Warning"}"
 ```
 
 错误示例 ❌：
@@ -376,13 +377,13 @@ CSV 中的写法：
 | 情况 | 写法 | 说明 |
 |------|------|------|
 | 无备注 | `{}` 或留空 | 空 JSON 对象或完全空白 |
-| 有 description | `"{""description"": ""xxx""}"` | 包含说明文字 |
-| 有枚举 | `"{""0"": ""A"", ""1"": ""B""}"` | 包含状态映射 |
+| 有 description | `"{"description": "xxx"}"` | 包含说明文字 |
+| 有枚举 | `"{"0": "A", "1": "B"}"` | 包含状态映射 |
 
 **示例**：
 ```csv
 0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Signal1,0,16,little_endian,否,0,1,-15000,-15000,15000,rpm,OilPump_MCU,{}
-0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Signal2,16,8,little_endian,否,0,1,0,0,255,,OilPump_MCU,"{""description"": ""备注内容""}"
+0x0CFE05E4,VCU_To_OilPump_MCU_Cmd,8,10,VCU,{},Signal2,16,8,little_endian,否,0,1,0,0,255,,OilPump_MCU,"{"description": "备注内容"}"
 ```
 
 ---
@@ -391,27 +392,27 @@ CSV 中的写法：
 
 **电机类信号**：
 ```csv
-"{""description"": ""电机转速，单位rpm，负值表示反向转动""}"
-"{""description"": ""电机转矩，范围-5000~5000 Nm，偏移量-5000""}"
-"{""0"": ""停止"", ""1"": ""正转"", ""2"": ""反转"", ""3"": ""故障""}"
+"{"description": "电机转速，单位rpm，负值表示反向转动"}"
+"{"description": "电机转矩，范围-5000~5000 Nm，偏移量-5000"}"
+"{"0": "停止", "1": "正转", "2": "反转", "3": "故障"}"
 ```
 
 **温度类信号**：
 ```csv
-"{""description"": ""绕组温度，范围-40~215°C，偏移量-40""}"
-"{""description"": ""温度传感器故障标志，0=正常，1=故障""}"
+"{"description": "绕组温度，范围-40~215°C，偏移量-40"}"
+"{"description": "温度传感器故障标志，0=正常，1=故障"}"
 ```
 
 **故障类信号**：
 ```csv
-"{""0"": ""无故障"", ""1"": ""警告"", ""2"": ""轻故障"", ""3"": ""重故障"", ""4"": ""关闭""}"
-"{""description"": ""故障代码，详见故障代码表第3章""}"
+"{"0": "无故障", "1": "警告", "2": "轻故障", "3": "重故障", "4": "关闭"}"
+"{"description": "故障代码，详见故障代码表第3章"}"
 ```
 
 **状态类信号**：
 ```csv
-"{""00"": ""空档"", ""01"": ""D档"", ""10"": ""R档"", ""11"": ""P档""}"
-"{""0"": ""离线"", ""1"": ""在线"", ""2"": ""初始化中"", ""3"": ""待命""}"
+"{"00": "空档", "01": "D档", "10": "R档", "11": "P档"}"
+"{"0": "离线", "1": "在线", "2": "初始化中", "3": "待命"}"
 ```
 
 ---
@@ -424,7 +425,7 @@ import json
 import csv
 
 def verify_json_field(csv_row):
-    """验证 CSV 行中的 JSON 字段是否合法"""
+    ""验证 CSV 行中的 JSON 字段是否合法""
     # 假设第 19 列是备注(JSON)
     json_field = csv_row[18]
     
@@ -522,7 +523,7 @@ uv run python csv2dbc.py convert outputs/protocol_unified.csv -o outputs/protoco
 - [ ] 长度(bit) 都是整数（8, 16, 32 等）
 - [ ] 缩放系数和偏移都是数字（可以是小数如 0.5）
 - [ ] 有符号字段只能是 `"是"` 或 `"否"`
-- [ ] JSON 字段双引号转义为 `""`，例如 `"{""key"":""value""}"`
+- [ ] JSON 字段双引号转义为 `"`，例如 `"{"key":"value"}"`
 - [ ] 字节序只能是 `little_endian` 或 `big_endian`
 - [ ] 各行的列数一致，没有缺少或多余的字段
 - [ ] CSV 编码为 UTF-8（不是 GBK 或其他）
@@ -581,7 +582,7 @@ CAN4（250K）→ XugongMCU_CAN4_250K_unified.csv
 - [ ] 报文数、信号数与原文档一致
 - [ ] 同一报文内信号起始位不重叠
 - [ ] 消息 ID 格式为 `0x` 十六进制
-- [ ] JSON 双引号已转义 `""`
+- [ ] JSON 双引号已转义 `"`
 - [ ] 信号名称全局唯一
 
 详细 CSV 格式规范见 `references/unified_csv_format.md`

@@ -162,6 +162,7 @@ print('位检查完成')
 ---
 
 ## 第六步：交付
+交付完成即可 无需生成报告
 
 ```bash
 cp /home/claude/workspace/outputs/*.dbc /mnt/user-data/outputs/
