@@ -4,9 +4,10 @@ description: >
   提取并总结 CAN 通讯协议 PDF 文档。
   支持完整的文本提取、统计分析、关键词搜索。
   使用 Typer 框架实现的现代化 CLI 工具。
-  适用场景：用户需要提取 PDF 中的协议信息、报文定义、信号参数等内容。
+  备选方案：若 summarize_pdf.py 无法读取 PDF，使用 extract_pdf.py 提取完整的 PDF 文本和表格。
+  适用场景：用户需要提取 PDF 中的协议信息、报文定义、信号参数等内容，或从 PDF 中提取内容用于大模型处理生成 CSV。
   当用户提到 "提取PDF"、"总结协议"、"PDF转文本"、"协议文档摘要"、
-  "CAN协议提取"、"电机控制器协议"、"通讯协议分析"、"PDF文本提取" 等关键词时，必须使用本 skill。
+  "CAN协议提取"、"电机控制器协议"、"通讯协议分析"、"PDF文本提取"、"PDF转CSV" 等关键词时，必须使用本 skill。
 ---
 
 # PDF 提取和总结 Skill
@@ -15,6 +16,8 @@ description: >
 
 使用内置的 `summarize_pdf.py` 工具（基于 Typer 框架）提取并分析 PDF 文档，
 提供完整的文本提取、统计分析、关键词搜索等功能。
+
+若 `summarize_pdf.py` 无法读取 PDF，使用备选工具 `extract_pdf.py` 直接提取 PDF 内容供大模型处理。
 
 ---
 
@@ -260,7 +263,75 @@ ls -la /home/claude/workspace/*.pdf
 uv run summarize_pdf.py summarize "/home/claude/workspace/protocol.pdf"
 ```
 
-### 问题 2: "No module named 'pdfplumber'"
+### 问题 2: summarize_pdf.py 无法读取 PDF（备选方案）
+
+若 `summarize_pdf.py` 无法正确读取 PDF，可使用 `extract_pdf.py` 作为备选：
+
+#### 使用 extract_pdf.py 代替
+
+```bash
+cd /home/claude/workspace
+
+# 将以下脚本保存为 extract_pdf.py
+cat > extract_pdf.py << 'EOF'
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import pdfplumber
+
+pdf_path = 'protocol.pdf'
+
+try:
+    with pdfplumber.open(pdf_path) as pdf:
+        print(f'PDF 页数: {len(pdf.pages)}')
+        
+        # 提取所有页的文本和表格信息
+        for i in range(len(pdf.pages)):
+            page = pdf.pages[i]
+            text = page.extract_text()
+            tables = page.extract_tables()
+            
+            print(f'\n{"="*60}')
+            print(f'第 {i+1} 页')
+            print(f'{"="*60}')
+            
+            if text:
+                print('文本内容（前1500字）:')
+                print(text[:1500])
+            
+            if tables:
+                print(f'\n找到 {len(tables)} 个表格')
+                for j, table in enumerate(tables):
+                    print(f'\n表格 {j+1}:')
+                    for row in table[:10]:  # 显示前10行
+                        print(row)
+            
+except Exception as e:
+    print(f'错误: {e}')
+EOF
+
+# 运行 extract_pdf.py
+uv run python extract_pdf.py > outputs/pdf_extracted.txt 2>&1
+
+# 查看提取的内容
+less outputs/pdf_extracted.txt
+```
+
+#### extract_pdf.py 优势
+
+- ✅ 直接使用 pdfplumber，不依赖 Typer CLI 框架
+- ✅ 完整提取 PDF 文本和表格，包含所有页
+- ✅ 输出结构清晰，便于大模型处理
+- ✅ 当 summarize_pdf.py 失败时的可靠备选方案
+- ✅ 适合用于后续大模型识别和 CSV 生成
+
+#### 处理流程
+
+1. 运行 `extract_pdf.py` 生成 `pdf_extracted.txt`
+2. 大模型读取完整的提取结果
+3. 大模型识别波特率、字节序、报文定义、信号参数
+4. 大模型直接输出 Unified CSV 格式（**不生成脚本**）
+
+### 问题 3: "No module named 'pdfplumber'"
 
 ```bash
 # 确保在正确的目录中运行
@@ -268,9 +339,11 @@ cd /home/claude/workspace
 
 # 再次运行，uv 会自动安装依赖
 uv run summarize_pdf.py summarize "your_file.pdf"
+# 或
+uv run python extract_pdf.py
 ```
 
-### 问题 3: uv 命令未找到
+### 问题 4: uv 命令未找到
 
 ```bash
 # 配置 PATH

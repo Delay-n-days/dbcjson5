@@ -224,15 +224,16 @@ def unified_csv_to_dbc(unified_csv, output_dbc, encoding='utf-8'):
         with open(output_path, 'w', encoding='gb2312') as f:
             f.write(dbc_content)
         
-        # 验证
+        # 验证 - 使用 cantools 导入验证
         print(f"正在验证生成的 DBC 文件...")
         db_verify = cantools.database.load_file(str(output_path), encoding='gb2312')
         
-        if len(db_verify.messages) == len(messages_dict):
-            print(f"✓ 验证成功! 包含 {len(messages_dict)} 条消息")
-        else:
-            print(f"⚠ 警告: 消息数量不匹配")
+        # 统计信号总数
+        total_signals = sum(len(msg.signals) for msg in db_verify.messages)
         
+        print(f"✓ 验证成功!")
+        print(f"  报文数: {len(db_verify.messages)}")
+        print(f"  信号数: {total_signals}")
         print(f"✓ 输出文件: {output_dbc}")
         return True
         

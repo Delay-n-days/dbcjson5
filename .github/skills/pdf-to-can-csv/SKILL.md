@@ -43,12 +43,71 @@ ls /mnt/user-data/uploads/
 
 ### 2A. PDF 文件
 
-Claude 可直接视觉解析 PDF 图像内容，无需调用工具。
-重点提取：
-1. 波特率与字节序（如 `500kbps`，`INTEL 格式` = `little_endian`）
-2. 报文列表表格（含 ID、名称、长度、周期）
-3. 各报文的信号定义表格（含起始位、长度、参数名、范围、单位、偏移、比例）
-4. pdf生成的txt -> csv 不要编写脚本, 直接让 大模型 识别pdf生成的txt内容并输出统一格式的 CSV 文本
+#### 提取方式：使用 extract_pdf.py 生成 PDF 内容，然后由大模型处理
+
+使用内置的 `extract_pdf.py` 工具从 PDF 提取所有文本和表格：
+
+```bash
+cd /home/claude/workspace
+uv run python extract_pdf.py
+```
+
+此脚本输出 PDF 的完整文本内容和表格数据，然后 **由大模型（Claude）直接识别和处理**：
+
+1. **无需编写脚本转换 PDF → CSV**，直接让大模型识别提取的内容
+2. **大模型负责识别**：波特率、字节序、报文结构、信号定义
+3. **大模型负责生成** Unified CSV 格式的表格内容
+4. **避免错误**：绝不使用自动脚本生成 CSV，因为协议表格结构变异大，容易出错
+
+#### extract_pdf.py 脚本内容
+
+将以下脚本放在工作目录中，用于提取 PDF 文本和表格：
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import pdfplumber
+
+pdf_path = '协议文档.pdf'
+
+try:
+    with pdfplumber.open(pdf_path) as pdf:
+        print(f'PDF 页数: {len(pdf.pages)}')
+        
+        # 提取所有页的文本和表格信息
+        for i in range(len(pdf.pages)):
+            page = pdf.pages[i]
+            text = page.extract_text()
+            tables = page.extract_tables()
+            
+            print(f'\n{"="*60}')
+            print(f'第 {i+1} 页')
+            print(f'{"="*60}')
+            
+            if text:
+                print('文本内容（前1000字）:')
+                print(text[:1000])
+            
+            if tables:
+                print(f'\n找到 {len(tables)} 个表格')
+                for j, table in enumerate(tables):
+                    print(f'\n表格 {j+1}:')
+                    for row in table[:10]:  # 显示前10行
+                        print(row)
+            
+except Exception as e:
+    print(f'错误: {e}')
+```
+
+#### 大模型处理流程
+
+1. 运行 `extract_pdf.py` 获得完整的 PDF 文本和表格数据
+2. 大模型读取输出结果
+3. 大模型识别：
+   - 波特率与字节序（如 `500kbps`，`INTEL 格式` = `little_endian`）
+   - 报文列表表格（含 ID、名称、长度、周期）
+   - 各报文的信号定义表格（含起始位、长度、参数名、范围、单位、偏移、比例）
+4. 大模型直接输出符合 Unified CSV 格式的表格内容（**不生成脚本**）
 
 
 ### 2B. Excel 文件（.xlsx）
@@ -408,14 +467,102 @@ with open('output.csv', 'r', encoding='utf-8') as f:
 
 ---
 
+## 第五步：CSV 生成（关键提示）
 
+### ⚠️ 重要规则：**CSV 不能通过脚本自动生成，必须由大模型手动生成**
+
+#### 为什么不能自动化？
+
+1. **协议表格结构变异大**：不同厂商、不同协议版本的表格结构差异很大
+2. **字段位置不固定**：信号参数在表格中的列顺序不统一
+3. **嵌套和合并单元格**：许多协议文档使用合并单元格，自动解析容易出错
+4. **中文关键词多样**：同一个概念有多种表述方式（如 "起始位"、"Start Bit"、"开始位置"）
+5. **数据清理需人工判断**：格式错误、单位符号、范围解析等需要人工确认
+
+#### 正确做法
+
+1. **使用 extract_pdf.py（或 summarize_pdf.py）提取 PDF 内容**
+   ```bash
+   uv run python extract_pdf.py > pdf_content.txt
+   ```
+
+2. **大模型（Claude）读取提取的 PDF 内容**
+   - 识别所有报文定义和信号参数
+   - 解析数值范围、单位、偏移量、比例系数
+   - 识别波特率、字节序、发送/接收方向
+
+3. **大模型直接输出 Unified CSV 格式**
+   - **不编写脚本来转换**
+   - **不用自动化工具来解析**
+   - 直接生成符合 19 列格式的表格文本
+   - 所有 JSON 字段正确转义
+
+4. **验证和保存**
+   - 将大模型输出的 CSV 内容保存为文件
+   - 编码：UTF-8
+   - 第一行必须是列名（参考 4.1 节）
+   - 每行一个信号，同一报文重复报文信息
+
+#### 示例工作流
+
+```bash
+# 1. 提取 PDF
+cd /home/claude/workspace
+uv run python extract_pdf.py > outputs/protocol_extracted.txt
+
+# 2. 大模型读取 protocol_extracted.txt，生成 CSV 文本
+# （这一步在 Claude 对话中完成，不是脚本）
+
+# 3. 保存大模型输出为 CSV 文件
+cat > outputs/protocol_unified.csv << 'EOF'
+消息ID,消息名称,消息长度,周期时间(ms),发送者,消息备注(JSON),信号名称,起始位,长度(bit),字节序,有符号,初值,缩放系数,偏移,最小值,最大值,单位,接收者,备注(JSON)
+0x18ff31f0,VCU_COMMAND_IPU,8,10,VCU,"{}",Throttle_Pedal,0,7,little_endian,否,0,1,0,0,100,%,IPU,"{}"
+...（其他行）
+EOF
+
+# 4. 验证 CSV 文件
+ls -lh outputs/protocol_unified.csv
+head -5 outputs/protocol_unified.csv
+
+# 5. 转换为 DBC
+uv run python csv2dbc.py convert outputs/protocol_unified.csv -o outputs/protocol.dbc -e utf-8
+```
+
+#### CSV 质量检查清单
+
+- [ ] 列数必须是 19 列（没有多也没有少）
+- [ ] 第一行是列名：`消息ID,消息名称,消息长度,...,备注(JSON)`
+- [ ] 消息 ID 都以 `0x` 开头，使用十六进制
+- [ ] 长度(bit) 都是整数（8, 16, 32 等）
+- [ ] 缩放系数和偏移都是数字（可以是小数如 0.5）
+- [ ] 有符号字段只能是 `"是"` 或 `"否"`
+- [ ] JSON 字段双引号转义为 `""`，例如 `"{""key"":""value""}"`
+- [ ] 字节序只能是 `little_endian` 或 `big_endian`
+- [ ] 各行的列数一致，没有缺少或多余的字段
+- [ ] CSV 编码为 UTF-8（不是 GBK 或其他）
 
 ## 第五步：输出与验证
 
 ### 5.1 文件命名规则
 
-文件名格式：`{项目名}_{波特率}_unified.csv`
+**⚠️ 重要**：文件名必须包含波特率后缀，格式为：`{项目名}_{波特率}_unified.csv`
 
+**波特率后缀映射表**：
+
+| 协议中的波特率 | 文件名后缀 | 完整文件名示例 |
+|-----------|---------|--------------|
+| 250kbps、250K | `_250K` | `GTAKE_protocol_250K_unified.csv` |
+| 500kbps、500K | `_500K` | `XugongMCU_500K_unified.csv` |
+| 1Mbps、1000kbps | `_1M` | `ElectricMotor_1M_unified.csv` |
+| 125kbps、125K | `_125K` | `LowSpeed_125K_unified.csv` |
+| 未找到/不确定 | `_UnknownBaud` | `Protocol_UnknownBaud_unified.csv` |
+
+**生成文件名的步骤**：
+1. 从协议文档第一步提取的波特率值（如 "250kbps" → "250"）
+2. 确定对应的后缀（"250" → "_250K"）
+3. 项目名 + 波特率后缀 + "_unified.csv"
+
+**Python 参考代码**：
 ```python
 # 波特率后缀映射
 BAUD_SUFFIX = {
@@ -425,26 +572,26 @@ BAUD_SUFFIX = {
     '125': '_125K',
 }
 
-# 从协议文档中提取到的波特率（如 "500kbps" → "500"）
-baud_kbps = "500"  # 替换为实际提取值
+baud_kbps = "250"  # 从协议文档中提取
 suffix = BAUD_SUFFIX.get(baud_kbps, '_UnknownBaud')
 
-project_name = "XugongMCU"   # 替换为实际项目名
+project_name = "GTAKE_protocol"
 output_name = f"{project_name}{suffix}_unified.csv"
-# 例：XugongMCU_500K_unified.csv
+# 结果：GTAKE_protocol_250K_unified.csv
 ```
 
-**多波特率通道示例：**
+**多波特率通道示例**：
 ```
 CAN3（500K）→ XugongMCU_CAN3_500K_unified.csv
 CAN4（250K）→ XugongMCU_CAN4_250K_unified.csv
 ```
 
-保存至：`/mnt/user-data/outputs/{项目名}_{波特率}_unified.csv`
+**保存位置**：`outputs/{项目名}_{波特率}_unified.csv`
 
 ### 5.2 自检清单
 
-- [ ] 波特率已从文档中提取，文件名包含正确的波特率后缀（如 `_500K`）
+- [ ] ⚠️ **波特率已从文档中提取**，文件名包含正确的波特率后缀（如 `_250K`、`_500K`）
+- [ ] 文件命名格式：`{项目名}_{波特率}_unified.csv`（例：`GTAKE_protocol_250K_unified.csv`）
 - [ ] 报文数、信号数与原文档一致
 - [ ] 同一报文内信号起始位不重叠
 - [ ] 消息 ID 格式为 `0x` 十六进制

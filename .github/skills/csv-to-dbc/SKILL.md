@@ -88,6 +88,13 @@ export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 uv run python csv2dbc.py --help
 ```
 
+或使用 PowerShell（Windows）：
+
+```powershell
+cd C:\path\to\workspace
+uv run python csv2dbc.py --help
+```
+
 输出说明：
 ```
 Arguments:
@@ -110,6 +117,20 @@ echo "转换: $CSV"
 
 uv run python csv2dbc.py "$CSV" \
     --output "outputs/$(basename $CSV .csv).dbc" \
+    --encoding utf-8
+```
+
+或 PowerShell（Windows）：
+
+```powershell
+cd C:\path\to\workspace
+
+# 自动检测 CSV 文件名
+$CSV = Get-ChildItem -Filter "*.csv" | Select-Object -First 1 -ExpandProperty Name
+echo "转换: $CSV"
+
+uv run python csv2dbc.py "$CSV" `
+    --output "outputs\$($CSV -replace '\.csv$', '.dbc')" `
     --encoding utf-8
 ```
 
