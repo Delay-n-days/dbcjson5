@@ -59,45 +59,30 @@ uv run python extract_pdf.py
 3. **大模型负责生成** Unified CSV 格式的表格内容
 4. **避免错误**：绝不使用自动脚本生成 CSV，因为协议表格结构变异大，容易出错
 
-#### extract_pdf.py 脚本内容
+#### 样例输出
 
-将以下脚本放在工作目录中，用于提取 PDF 文本和表格：
+严格按照 Unified CSV 格式输出，第一行是列名，后续每行一个信号：
 
-```python
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import pdfplumber
-
-pdf_path = '协议文档.pdf'
-
-try:
-    with pdfplumber.open(pdf_path) as pdf:
-        print(f'PDF 页数: {len(pdf.pages)}')
-        
-        # 提取所有页的文本和表格信息
-        for i in range(len(pdf.pages)):
-            page = pdf.pages[i]
-            text = page.extract_text()
-            tables = page.extract_tables()
-            
-            print(f'\n{"="*60}')
-            print(f'第 {i+1} 页')
-            print(f'{"="*60}')
-            
-            if text:
-                print('文本内容（前1000字）:')
-                print(text[:1000])
-            
-            if tables:
-                print(f'\n找到 {len(tables)} 个表格')
-                for j, table in enumerate(tables):
-                    print(f'\n表格 {j+1}:')
-                    for row in table[:10]:  # 显示前10行
-                        print(row)
-            
-except Exception as e:
-    print(f'错误: {e}')
+```csv
+消息ID,消息名称,消息长度,周期时间(ms),发送者,消息备注(JSON),信号名称,起始位,长度(bit),字节序,有符号,初值,缩放系数,偏移,最小值,最大值,单位,接收者,备注(JSON)
+0x18FF5678,MCU2_STATUS5,8,,,,MCU1_VoltD,0,16,little_endian,否,,1,-30000,,,,,
+0x18FF5678,MCU2_STATUS5,8,,,,MCU1_VoltQ,16,16,little_endian,否,,1,-30000,,,,,
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_Soft_ProtocolVer,8,4,little_endian,否,,0.1,2,,,,HCU,"{""0"": ""INIT"", ""1"": ""LV_PWR_UP"", ""2"": ""HV_PWR_UP"", ""3"": ""Idle"", ""4"": ""Speed Control"", ""5"": ""Torque Control"", ""6"": ""SHUTDWN(active capacitor discharge)"", ""7"": 
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_Rotation_Unit,34,2,little_endian,否,,1,0,0,3,,HCU,
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_soft_ver,40,24,little_endian,否,,1,0,0,16777215,,HCU,"{""0"": ""INIT"", ""1"": ""LV_PWR_UP"", ""2"": ""HV_PWR_UP"", ""3"": ""Idle"", ""4"": ""Speed Control"", ""5"": ""Torque Control"", ""6"": ""SHUTDWN(active capacitor discharge)"", ""7"": ""LV_PWR_DWN"", ""8"": ""FAULT""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Speed,0,16,little_endian,否,,1,-6000,-6000,59535,rpm,HCU,"{""description"": ""电机转速正负表示电机转向，转速为正时与发动机正常转动方向一致""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Torque,16,16,little_endian,否,,1,-3200,-3200,62335,Nm,HCU,"{""description"": ""转矩矩大于0为转矩方向与发动机转向相同""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_DC_Current,32,16,little_endian,否,,1,-1000,-1000,64535,A,HCU,
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_IvtPwmTzFrc,48,8,little_endian,否,,1,0,,,,,
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Fail_Grade,56,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""No Fault"", ""1"": ""Warning(degraded)"", ""2"": ""Fault(zero torque output)"", ""3"": ""Fault(shut down MCU)"", ""4"": ""Serious Fault(need to stop the vehicle)""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Work_Mode,60,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""Ready（上电完成 MCU 已开管不 控制）"", ""1"": ""Enable（上电完成，MCU 未开管）"", ""2"": ""PowerUp（低压上电，准备上高压 或者高压上电过程中）"", ""3"": ""Error(错误)"", ""4"": ""防溜坡控制状态"", ""5"": ""转速模式扭矩受限"", ""6"": ""扭矩模式转速受限"", ""7"": ""快速下电中"", ""8"": ""扭矩控制"", ""9"": ""速度控制""}"
 ```
+#### 读取pdf文件
+**不要自己编写 PDF 解析脚本**，直接使用内置的 `epdf-summary` skill工具 ，它会提取 PDF 中的文本和表格内容
+
+检查工作区是否有名为 `epdf-summary` 的skill，如果没有报错,否则利用 `extract_pdf.py` 提取 PDF 内容到 txt文件：然后读取txt文件内容，交给大模型处理：
+
+```bash
 
 #### 大模型处理流程
 
@@ -107,6 +92,7 @@ except Exception as e:
    - 波特率与字节序（如 `500kbps`，`INTEL 格式` = `little_endian`）
    - 报文列表表格（含 ID、名称、长度、周期）
    - 各报文的信号定义表格（含起始位、长度、参数名、范围、单位、偏移、比例）
+   - 信号名称不得超过30个字符,注释使用json格式,尽量为中文
 4. 大模型直接输出符合 Unified CSV 格式的表格内容（**不生成脚本**）
 
 

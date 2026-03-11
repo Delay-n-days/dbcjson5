@@ -19,6 +19,24 @@ description: >
 > ⚠️ **环境配置**：先参照 `uv-project-runner` skill 完成 uv 安装与 PATH 配置。
 
 ---
+#### 输入样例
+
+严格按照 Unified CSV 格式输出，第一行是列名，后续每行一个信号：
+
+```csv
+消息ID,消息名称,消息长度,周期时间(ms),发送者,消息备注(JSON),信号名称,起始位,长度(bit),字节序,有符号,初值,缩放系数,偏移,最小值,最大值,单位,接收者,备注(JSON)
+0x18FF5678,MCU2_STATUS5,8,,,,MCU1_VoltD,0,16,little_endian,否,,1,-30000,,,,,
+0x18FF5678,MCU2_STATUS5,8,,,,MCU1_VoltQ,16,16,little_endian,否,,1,-30000,,,,,
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_Soft_ProtocolVer,8,4,little_endian,否,,0.1,2,,,,HCU,"{""0"": ""INIT"", ""1"": ""LV_PWR_UP"", ""2"": ""HV_PWR_UP"", ""3"": ""Idle"", ""4"": ""Speed Control"", ""5"": ""Torque Control"", ""6"": ""SHUTDWN(active capacitor discharge)"", ""7"": 
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_Rotation_Unit,34,2,little_endian,否,,1,0,0,3,,HCU,
+0x1CFDD2F0,MCU2_STATUS4,8,,MCU2,,MCU2_soft_ver,40,24,little_endian,否,,1,0,0,16777215,,HCU,"{""0"": ""INIT"", ""1"": ""LV_PWR_UP"", ""2"": ""HV_PWR_UP"", ""3"": ""Idle"", ""4"": ""Speed Control"", ""5"": ""Torque Control"", ""6"": ""SHUTDWN(active capacitor discharge)"", ""7"": ""LV_PWR_DWN"", ""8"": ""FAULT""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Speed,0,16,little_endian,否,,1,-6000,-6000,59535,rpm,HCU,"{""description"": ""电机转速正负表示电机转向，转速为正时与发动机正常转动方向一致""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Torque,16,16,little_endian,否,,1,-3200,-3200,62335,Nm,HCU,"{""description"": ""转矩矩大于0为转矩方向与发动机转向相同""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_DC_Current,32,16,little_endian,否,,1,-1000,-1000,64535,A,HCU,
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_IvtPwmTzFrc,48,8,little_endian,否,,1,0,,,,,
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Fail_Grade,56,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""No Fault"", ""1"": ""Warning(degraded)"", ""2"": ""Fault(zero torque output)"", ""3"": ""Fault(shut down MCU)"", ""4"": ""Serious Fault(need to stop the vehicle)""}"
+0x18FF42F0,MCU2_STATUS1,8,,MCU2,,MCU2_Work_Mode,60,4,little_endian,否,,1,0,0,15,,HCU,"{""0"": ""Ready（上电完成 MCU 已开管不 控制）"", ""1"": ""Enable（上电完成，MCU 未开管）"", ""2"": ""PowerUp（低压上电，准备上高压 或者高压上电过程中）"", ""3"": ""Error(错误)"", ""4"": ""防溜坡控制状态"", ""5"": ""转速模式扭矩受限"", ""6"": ""扭矩模式转速受限"", ""7"": ""快速下电中"", ""8"": ""扭矩控制"", ""9"": ""速度控制""}"
+```
 
 ## 第一步：准备工作区
 
