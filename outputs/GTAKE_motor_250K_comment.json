@@ -1,0 +1,86 @@
+[
+    {
+        "TM_MCU_Enable": "// TM_MCU_Enable\t起始位:0\t长度:1\t系数:1\t偏移量:0\t0:disable\t\n// 1:enable"
+    },
+    {
+        "TM_Fault_Reset": "// TM_Fault_Reset\t起始位:1\t长度:1\t系数:1\t偏移量:0\t0:disable\t\n// 1:enable"
+    },
+    {
+        "TM_Control_Mode": "// TM_Control_Mode\t起始位:2\t长度:2\t系数:1\t偏移量:0\t0:Reserved\t\n// 1:Speed Control\t\n// 2 = Torque Control\t\n// 3 = Active Discharge"
+    },
+    {
+        "TM_Gear": "// TM_Gear\t起始位:4\t长度:2\t系数:1\t偏移量:0\t0:Neutral\t\n// 1:Drive\t\n// 2 = Reverse"
+    },
+    {
+        "TM_FootBrake": "// TM_FootBrake\t起始位:6\t长度:1\t系数:1\t偏移量:0\t0:No FootBrake\t\n// 1:FootBrake"
+    },
+    {
+        "TM_HandBrake": "// TM_HandBrake\t起始位:7\t长度:1\t系数:1\t偏移量:0\t0:No HandBrake\t\n// 1:HandBrake"
+    },
+    {
+        "TM_Demand_Limit_High": "// TM_Demand_Limit_High\t起始位:8\t长度:12\t系数:4\t偏移量:0\t单位:rpm\t转速指令限值上限，转矩控制模式时起作用"
+    },
+    {
+        "TM_Demand_Limit_Low": "// TM_Demand_Limit_Low\t起始位:20\t长度:12\t系数:4\t偏移量:0\t单位:rpm\t转速指令限值下限，转矩控制模式时起作用，网络发送正值但电机控制器按负值处理"
+    },
+    {
+        "TM_Demand_Torque": "// TM_Demand_Torque\t起始位:32\t长度:16\t系数:1\t偏移量:-5000\t单位:Nm\t转矩的正负表示力的方向，发动机旋转方向为正向"
+    },
+    {
+        "TM_Demand_Speed": "// TM_Demand_Speed\t起始位:48\t长度:16\t系数:1\t偏移量:-15000\t单位:rpm\t转速的正负表示电机旋转的方向，与发动机正常转动方向同向为正"
+    },
+    {
+        "TM_Motor_Speed": "// TM_Motor_Speed\t起始位:0\t长度:16\t系数:1\t偏移量:-15000\t单位:rpm\t电机转速正负表示电机转向，转速为正时与发动机正常转动方向一致"
+    },
+    {
+        "TM_Motor_Torque": "// TM_Motor_Torque\t起始位:16\t长度:16\t系数:1\t偏移量:-5000\t单位:Nm\t扭矩大于0为转矩方向与发动机转向相同"
+    },
+    {
+        "TM_Motor_AC_Current": "// TM_Motor_AC_Current\t起始位:32\t长度:16\t系数:0.1\t偏移量:0\t单位:A\t交流侧电流有效值反馈"
+    },
+    {
+        "TM_Precharge_Allow": "// TM_Precharge_Allow\t起始位:52\t长度:1\t系数:1\t偏移量:0\t0:disable\t\n// 1:enable"
+    },
+    {
+        "TM_Active_Discharge_Enable": "// TM_Active_Discharge_Enable\t起始位:53\t长度:1\t系数:1\t偏移量:0\t0:disable\t\n// 1:enable"
+    },
+    {
+        "TM_IGBT_Enable_Feedback": "// TM_IGBT_Enable_Feedback\t起始位:54\t长度:1\t系数:1\t偏移量:0\t0:disable\t\n// 1:enable"
+    },
+    {
+        "TM_Life_Counter_1": "// TM_Life_Counter_1\t起始位:60\t长度:4\t系数:1\t偏移量:0\t循环计数器"
+    },
+    {
+        "TM_Motor_Temperature": "// TM_Motor_Temperature\t起始位:0\t长度:8\t系数:1\t偏移量:-40\t单位:℃\t电机温度"
+    },
+    {
+        "TM_MCU_Temperature": "// TM_MCU_Temperature\t起始位:8\t长度:8\t系数:1\t偏移量:-40\t单位:℃\t电机控制器温度"
+    },
+    {
+        "TM_Torque_Limit_High": "// TM_Torque_Limit_High\t起始位:16\t长度:16\t系数:1\t偏移量:0\t单位:Nm\t转矩上限"
+    },
+    {
+        "TM_Torque_Limit_Low": "// TM_Torque_Limit_Low\t起始位:32\t长度:16\t系数:1\t偏移量:-5000\t单位:Nm\t转矩下限"
+    },
+    {
+        "TM_Fail_Grade": "// TM_Fail_Grade\t起始位:48\t长度:4\t系数:1\t偏移量:0\t0:No Fault\t\n// 1:Warning(degraded)\t\n// 2 = Fault(zero torque output)\t\n// 3 = Fault(shut down MCU)"
+    },
+    {
+        "TM_Life_Counter_2": "// TM_Life_Counter_2\t起始位:60\t长度:4\t系数:1\t偏移量:0\t循环计数器"
+    },
+    {
+        "TM_Fault_Code": "// TM_Fault_Code\t起始位:0\t长度:8\t系数:1\t偏移量:0\t错误故障码"
+    },
+    {
+        "TM_Alarm_Code": "// TM_Alarm_Code\t起始位:8\t长度:8\t系数:1\t偏移量:0\t告警故障码"
+    },
+    {
+        "TM_DC_Current": "// TM_DC_Current\t起始位:16\t长度:16\t系数:1\t偏移量:-1000\t单位:A\t直流电流（估计值，不建议作为控制量），电机驱动状态为负，发电状态为正"
+    },
+    {
+        "TM_DC_Voltage": "// TM_DC_Voltage\t起始位:32\t长度:16\t系数:0.1\t偏移量:0\t单位:V\t直流电压"
+    },
+    {
+        "TM_Life_Counter_3": "// TM_Life_Counter_3\t起始位:48\t长度:4\t系数:1\t偏移量:0\t循环计数器"
+    }
+]

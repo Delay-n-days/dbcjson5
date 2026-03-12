@@ -1,0 +1,131 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: 
+
+
+BO_ 2365523439 TM_HCU_Command: 8 HCU
+ SG_ TM_Demand_Speed : 48|16@1+ (1.0,-15000.0) [-15000.0|15000.0] "rpm"  TM_MCU
+ SG_ TM_Demand_Torque : 32|16@1+ (1.0,-5000.0) [-5000.0|5000.0] "Nm"  TM_MCU
+ SG_ TM_Demand_Limit_Low : 20|12@1+ (4.0,0.0) [0.0|16384.0] "rpm"  TM_MCU
+ SG_ TM_Demand_Limit_High : 8|12@1+ (4.0,0.0) [0.0|16384.0] "rpm"  TM_MCU
+ SG_ TM_HandBrake : 7|1@1+ (1,0) [0.0|1.0] ""  TM_MCU
+ SG_ TM_FootBrake : 6|1@1+ (1,0) [0.0|1.0] ""  TM_MCU
+ SG_ TM_Gear : 4|2@1+ (1,0) [0.0|2.0] ""  TM_MCU
+ SG_ TM_Control_Mode : 2|2@1+ (1,0) [0.0|3.0] ""  TM_MCU
+ SG_ TM_Fault_Reset : 1|1@1+ (1,0) [0.0|1.0] ""  TM_MCU
+ SG_ TM_MCU_Enable : 0|1@1+ (1,0) [0.0|1.0] ""  TM_MCU
+
+BO_ 2365521925 TM_MCU_STATUS_1: 8 TM_MCU
+ SG_ TM_Life_Counter_1 : 60|4@1+ (1,0) [0.0|15.0] ""  HCU
+ SG_ TM_IGBT_Enable_Feedback : 54|1@1+ (1,0) [0.0|1.0] ""  HCU
+ SG_ TM_Active_Discharge_Enable : 53|1@1+ (1,0) [0.0|1.0] ""  HCU
+ SG_ TM_Precharge_Allow : 52|1@1+ (1,0) [0.0|1.0] ""  HCU
+ SG_ TM_Motor_AC_Current : 32|16@1+ (0.1,0.0) [0.0|1000.0] "A"  HCU
+ SG_ TM_Motor_Torque : 16|16@1+ (1.0,-5000.0) [-5000.0|5000.0] "Nm"  HCU
+ SG_ TM_Motor_Speed : 0|16@1+ (1.0,-15000.0) [-15000.0|15000.0] "rpm"  HCU
+
+BO_ 2365522181 TM_MCU_STATUS_2: 8 TM_MCU
+ SG_ TM_Life_Counter_2 : 60|4@1+ (1,0) [0.0|15.0] ""  HCU
+ SG_ TM_Fail_Grade : 48|4@1+ (1,0) [0.0|3.0] ""  HCU
+ SG_ TM_Torque_Limit_Low : 32|16@1+ (1.0,-5000.0) [-5000.0|0.0] "Nm"  HCU
+ SG_ TM_Torque_Limit_High : 16|16@1+ (1,0) [0.0|5000.0] "Nm"  HCU
+ SG_ TM_MCU_Temperature : 8|8@1+ (1.0,-40.0) [-40.0|215.0] "℃"  HCU
+ SG_ TM_Motor_Temperature : 0|8@1+ (1.0,-40.0) [-40.0|215.0] "℃"  HCU
+
+BO_ 2365522437 TM_MCU_STATUS_3: 8 TM_MCU
+ SG_ TM_Life_Counter_3 : 48|4@1+ (1,0) [0.0|15.0] ""  HCU
+ SG_ TM_DC_Voltage : 32|16@1+ (0.1,0.0) [0.0|1000.0] "V"  HCU
+ SG_ TM_DC_Current : 16|16@1+ (1.0,-1000.0) [-1000.0|1000.0] "A"  HCU
+ SG_ TM_Alarm_Code : 8|8@1+ (1,0) [0.0|255.0] ""  HCU
+ SG_ TM_Fault_Code : 0|8@1+ (1,0) [0.0|255.0] ""  HCU
+
+
+
+
+CM_ BO_ 2365523439 "period 10ms";
+CM_ SG_ 2365523439 TM_Demand_Speed "转速的正负表示电机旋转的方向，与发动机正常转动方向同向为正";
+CM_ SG_ 2365523439 TM_Demand_Torque "转矩的正负表示力的方向，发动机旋转方向为正向";
+CM_ SG_ 2365523439 TM_Demand_Limit_Low "转速指令限值下限，转矩控制模式时起作用，网络发送正值但电机控制器按负值处理";
+CM_ SG_ 2365523439 TM_Demand_Limit_High "转速指令限值上限，转矩控制模式时起作用";
+CM_ SG_ 2365523439 TM_HandBrake "0:No HandBrake
+1:HandBrake";
+CM_ SG_ 2365523439 TM_FootBrake "0:No FootBrake
+1:FootBrake";
+CM_ SG_ 2365523439 TM_Gear "0:Neutral
+1:Drive
+2 = Reverse";
+CM_ SG_ 2365523439 TM_Control_Mode "0:Reserved
+1:Speed Control
+2 = Torque Control
+3 = Active Discharge";
+CM_ SG_ 2365523439 TM_Fault_Reset "0:disable
+1:enable";
+CM_ SG_ 2365523439 TM_MCU_Enable "0:disable
+1:enable";
+CM_ BO_ 2365521925 "period 10ms";
+CM_ SG_ 2365521925 TM_Life_Counter_1 "循环计数器";
+CM_ SG_ 2365521925 TM_IGBT_Enable_Feedback "0:disable
+1:enable";
+CM_ SG_ 2365521925 TM_Active_Discharge_Enable "0:disable
+1:enable";
+CM_ SG_ 2365521925 TM_Precharge_Allow "0:disable
+1:enable";
+CM_ SG_ 2365521925 TM_Motor_AC_Current "交流侧电流有效值反馈";
+CM_ SG_ 2365521925 TM_Motor_Torque "扭矩大于0为转矩方向与发动机转向相同";
+CM_ SG_ 2365521925 TM_Motor_Speed "电机转速正负表示电机转向，转速为正时与发动机正常转动方向一致";
+CM_ BO_ 2365522181 "period 50ms";
+CM_ SG_ 2365522181 TM_Life_Counter_2 "循环计数器";
+CM_ SG_ 2365522181 TM_Fail_Grade "0:No Fault
+1:Warning(degraded)
+2 = Fault(zero torque output)
+3 = Fault(shut down MCU)";
+CM_ SG_ 2365522181 TM_Torque_Limit_Low "转矩下限";
+CM_ SG_ 2365522181 TM_Torque_Limit_High "转矩上限";
+CM_ SG_ 2365522181 TM_MCU_Temperature "电机控制器温度";
+CM_ SG_ 2365522181 TM_Motor_Temperature "电机温度";
+CM_ BO_ 2365522437 "period 100ms";
+CM_ SG_ 2365522437 TM_Life_Counter_3 "循环计数器";
+CM_ SG_ 2365522437 TM_DC_Voltage "直流电压";
+CM_ SG_ 2365522437 TM_DC_Current "直流电流（估计值，不建议作为控制量），电机驱动状态为负，发电状态为正";
+CM_ SG_ 2365522437 TM_Alarm_Code "告警故障码";
+CM_ SG_ 2365522437 TM_Fault_Code "错误故障码";
+
+
+
+
+
+
+
