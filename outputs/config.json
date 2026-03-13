@@ -1,0 +1,101 @@
+{
+  "msg_id": "0x0CFF05EF",
+  "msg_struct": "g_SaeRxMsg[0].Data.MotRx1",
+  "mapping_analysis": {
+    "description": "GTAKE电机控制协议映射分析",
+    "rx_message": "TM_HCU_Command",
+    "total_signals_in_protocol": 10,
+    "signals_used_in_function": 10,
+    "signals_missing": 0
+  },
+  "numbers": [
+    {
+      "signal_name": "TM_Demand_Torque",
+      "start_bit": 32,
+      "length": 16,
+      "scale": 1,
+      "offset": -5000,
+      "output_var": "RefTempTorq"
+    },
+    {
+      "signal_name": "TM_Demand_Speed",
+      "start_bit": 48,
+      "length": 16,
+      "scale": 1,
+      "offset": -15000,
+      "output_var": "RxSpdRefValue"
+    },
+    {
+      "signal_name": "TM_Demand_Limit_High",
+      "start_bit": 8,
+      "length": 12,
+      "scale": 4,
+      "offset": 0,
+      "output_var": "RxFwdSpdLimValue"
+    },
+    {
+      "signal_name": "TM_Demand_Limit_Low",
+      "start_bit": 20,
+      "length": 12,
+      "scale": 4,
+      "offset": 0,
+      "output_var": "RxRevSpdLimValue"
+    }
+  ],
+  "switches": [
+    {
+      "signal_name": "TM_MCU_Enable",
+      "output_field": "RunOrStop",
+      "logic_type": "simple",
+      "params": ""
+    },
+    {
+      "signal_name": "TM_Fault_Reset",
+      "output_field": "FaultReset",
+      "logic_type": "simple",
+      "params": ""
+    },
+    {
+      "signal_name": "TM_Control_Mode",
+      "output_field": "SpdTorqModSel",
+      "logic_type": "cond",
+      "params": "1:1,2:0,3:0,*:0"
+    },
+    {
+      "signal_name": "TM_Gear",
+      "output_field": "Direction",
+      "logic_type": "complex",
+      "params": "gear"
+    },
+    {
+      "signal_name": "TM_FootBrake",
+      "output_field": "Braking",
+      "logic_type": "or",
+      "params": "TM_HandBrake"
+    }
+  ],
+  "has_gear": true,
+  "has_active_discharge": true,
+  "active_discharge_signal": "TM_Control_Mode",
+  "active_discharge_value": 3,
+  "missing": [
+    {
+      "output_var": "RxDrvTorLimValue",
+      "searched_signals": [
+        "驱动转矩限制",
+        "Drive Torque Limit"
+      ],
+      "found": false,
+      "action": "default_zero"
+    },
+    {
+      "output_var": "RxBrkTorLimValue",
+      "searched_signals": [
+        "制动转矩限制",
+        "Brake Torque Limit"
+      ],
+      "found": false,
+      "action": "default_zero"
+    }
+  ]
+}

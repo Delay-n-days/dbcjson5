@@ -1,4 +1,12 @@
 # DBC to C Header - DBC转C头文件工具
+---
+name: dbc-to-header
+description: >
+    注意: 这个skill是control-code-generator 的 子功能,请优先阅读control-code-generator skill
+    从 DBC 文件自动生成 C 语言头文件，包含完整的结构体定义、宏定义和联合体。支持位域自动拆分、预留位填充、64位总长度验证。
+    适用场景：用户需要从 DBC 文件生成 C 语言头文件；或用户提到 "DBC转C头文件"、"DBC转.h"、"CAN协议头文件生成"、"位域结构体生成"、"预留位填充"、"64位验证" 等关键词时，必须使用本 skill。
+    本 skill 内置 dbc2header.py 脚本，无需用户额外上传转换工具。
+---
 
 ## 描述
 
@@ -186,21 +194,6 @@ uv run python .github/skills/dbc-to-header/scripts/dbc2header.py dbc \
 
 ---
 
-### 旧版用法（不推荐，已弃用）
-
-以下用法不再支持（缺少必需的 `--baud` 和 `--rx-id` 参数）：
-
-```bash
-# ❌ 已弃用：缺少波特率和接收ID参数
-uv run python scripts/dbc2header.py motor.dbc
-
-# ✅ 正确方式：必须指定参数
-uv run python scripts/dbc2header.py dbc motor.dbc --baud 250 --rx-id 0x0CFF09EF
-```
-
-## 参数说明（旧版）
-
-以下参数说明已过时，请参考上方的子命令参数说明。
 
 ## 输出示例
 

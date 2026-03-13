@@ -1,0 +1,113 @@
+{
+  "msg_id": "0x0CFF05EF",
+  "msg_struct": "g_SaeRxMsg[0].Data.MotRx1",
+  
+  "mapping_analysis": {
+    "description": "协议CSV分析：接收消息TM_HCU_Command包含10个信号，其中8个用于SaeRxUpdateVar函数，2个信号在协议中不存在（RxDrvTorLimValue、RxBrkTorLimValue），将默认赋0",
+    "rx_message": "TM_HCU_Command (0x0CFF05EF)",
+    "total_signals_in_protocol": 10,
+    "signals_used": 8,
+    "signals_missing": 2,
+    "unused_signals": 0
+  },
+  
+  "numbers": [
+    {
+      "signal_name": "TM_Demand_Torque",
+      "start_bit": 32,
+      "length": 16,
+      "scale": 1,
+      "offset": -5000,
+      "output_var": "RefTempTorq",
+      "comment": "转矩的正负表示力的方向，发动机旋转方向为正向"
+    },
+    {
+      "signal_name": "TM_Demand_Speed",
+      "start_bit": 48,
+      "length": 16,
+      "scale": 1,
+      "offset": -15000,
+      "output_var": "RxSpdRefValue",
+      "comment": "转速的正负表示电机旋转的方向，与发动机正常转动方向同向为正"
+    },
+    {
+      "signal_name": "TM_Demand_Limit_High",
+      "start_bit": 8,
+      "length": 12,
+      "scale": 4,
+      "offset": 0,
+      "output_var": "RxFwdSpdLimValue",
+      "comment": "转速指令限值上限，转矩控制模式时起作用"
+    },
+    {
+      "signal_name": "TM_Demand_Limit_Low",
+      "start_bit": 20,
+      "length": 12,
+      "scale": 4,
+      "offset": 0,
+      "output_var": "RxRevSpdLimValue",
+      "comment": "转速指令限值下限，转矩控制模式时起作用，网络发送正值但电机控制器按负值处理"
+    }
+  ],
+  
+  "switches": [
+    {
+      "signal_name": "TM_MCU_Enable",
+      "output_field": "RunOrStop",
+      "logic_type": "simple",
+      "params": "",
+      "comment": "电机控制单元使能控制器的使能指令具体指控制器IGBT的PWM开关指令"
+    },
+    {
+      "signal_name": "TM_Fault_Reset",
+      "output_field": "FaultReset",
+      "logic_type": "simple",
+      "params": "",
+      "comment": "用于清除控制器的故障主要用于调试整车运行中不建议使用"
+    },
+    {
+      "signal_name": "TM_Control_Mode",
+      "output_field": "SpdTorqModSel",
+      "logic_type": "cond",
+      "params": "1:1,2:0,3:0,*:0",
+      "comment": "0:Reserved; 1:Speed Control; 2:Torque Control; 3:Active Discharge"
+    },
+    {
+      "signal_name": "TM_Gear",
+      "output_field": "Gear",
+      "logic_type": "complex",
+      "params": "N档:0,D档:1,R档:2(转矩取反)",
+      "comment": "0:Neutral; 1:Drive; 2:Reverse"
+    },
+    {
+      "signal_name": "TM_FootBrake",
+      "output_field": "Braking",
+      "logic_type": "or",
+      "params": "TM_HandBrake",
+      "comment": "0:No FootBrake; 1:FootBrake"
+    }
+  ],
+  
+  "has_gear": true,
+  "has_active_discharge": true,
+  "active_discharge_signal": "TM_Control_Mode",
+  "active_discharge_value": 3,
+  
+  "missing": [
+    {
+      "output_var": "RxDrvTorLimValue",
+      "searched_signals": ["驱动转矩限制", "Drive Torque Limit", "DrvTor"],
+      "found": false,
+      "action": "default_zero"
+    },
+    {
+      "output_var": "RxBrkTorLimValue",
+      "searched_signals": ["制动转矩限制", "Brake Torque Limit", "BrkTor"],
+      "found": false,
+      "action": "default_zero"
+    }
+  ],
+  
+  "unused_signals": [
+  ]
+}

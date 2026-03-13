@@ -1,0 +1,103 @@
+{
+  "msg_id": "0x0CFF08EF",
+  "msg_struct": "g_SaeRxMsg[0].Data.MotRx1",
+  
+  "mapping_analysis": {
+    "description": "JJE ISG 电机协议映射分析 - ISG启发电机无档位概念，采用速度/转矩双模式控制",
+    "rx_message": "ISG_HCU_Command",
+    "total_signals_in_protocol": 8,
+    "signals_used_in_function": 6,
+    "signals_missing": 3
+  },
+  
+  "numbers": [
+    {
+      "signal_name": "DemandTorque",
+      "start_bit": 32,
+      "length": 16,
+      "scale": 1,
+      "offset": -5000,
+      "output_var": "RefTempTorq"
+    },
+    {
+      "signal_name": "DemandSpeed",
+      "start_bit": 48,
+      "length": 16,
+      "scale": 1,
+      "offset": -15000,
+      "output_var": "RxSpdRefValue"
+    },
+    {
+      "signal_name": "DemandLimitHigh",
+      "start_bit": 8,
+      "length": 12,
+      "scale": 1,
+      "offset": 0,
+      "output_var": "RxFwdSpdLimValue"
+    },
+    {
+      "signal_name": "DemandLimitLow",
+      "start_bit": 20,
+      "length": 12,
+      "scale": 1,
+      "offset": 0,
+      "output_var": "RxRevSpdLimValue"
+    }
+  ],
+  
+  "switches": [
+    {
+      "signal_name": "MCU_Enable",
+      "output_field": "RunOrStop",
+      "logic_type": "simple",
+      "params": ""
+    },
+    {
+      "signal_name": "FaultReset",
+      "output_field": "FaultReset",
+      "logic_type": "simple",
+      "params": ""
+    },
+    {
+      "signal_name": "CtrlMode",
+      "output_field": "SpdTorqModSel",
+      "logic_type": "cond",
+      "params": "1:1,2:0,3:0,*:0"
+    },
+    {
+      "signal_name": "CtrlMode",
+      "output_field": "mainctrl",
+      "logic_type": "cond",
+      "params": "3:1,*:0"
+    }
+  ],
+  
+  "has_gear": false,
+  "has_active_discharge": true,
+  "active_discharge_signal": "CtrlMode",
+  "active_discharge_value": 3,
+  
+  "missing": [
+    {
+      "output_var": "RxDrvTorLimValue",
+      "searched_signals": ["驱动转矩限制", "Drive Torque Limit"],
+      "found": false,
+      "action": "default_zero",
+      "reason": "ISG协议中无驱动转矩限制信号"
+    },
+    {
+      "output_var": "RxBrkTorLimValue",
+      "searched_signals": ["制动转矩限制", "Brake Torque Limit"],
+      "found": false,
+      "action": "default_zero",
+      "reason": "ISG协议中无制动转矩限制信号"
+    },
+    {
+      "output_var": "VehicleCmdCanTemp.B.Direction/ReDirection/NeutralPosition",
+      "searched_signals": ["档位", "Gear"],
+      "found": false,
+      "action": "default_zero",
+      "reason": "ISG启发电机无档位概念，通过转速正负控制方向"
+    }
+  ]
+}
